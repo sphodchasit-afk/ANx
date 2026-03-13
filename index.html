@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0c0c10">
+<meta name="theme-color" content="#faf7f2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,20 +15,20 @@
 <style>
 /* ── SHELL ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:#0c0c10;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:antialiased}
 :root{
   --safe-t:env(safe-area-inset-top,0px);
   --safe-b:env(safe-area-inset-bottom,0px);
   --bar-h:54px;
   --mint:#4ecca3;--amber:#d4a96a;
-  --text:#f0eee8;--text2:#55535f;
-  --bg:#0c0c10;--bg2:#14141a;
-  --edge:rgba(255,255,255,0.08);
+  --text:#2c2416;--text2:#8a7d6b;
+  --bg:#faf7f2;--bg2:#f0ebe2;
+  --edge:rgba(44,36,22,0.1);
 }
 #shell{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative}
 #top-bar{
   flex-shrink:0;height:calc(var(--bar-h) + var(--safe-t));padding-top:var(--safe-t);
-  background:rgba(12,12,16,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  background:rgba(250,247,242,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--edge);display:flex;align-items:center;
   padding-left:12px;padding-right:12px;gap:4px;z-index:200;position:relative;
 }
@@ -39,7 +39,7 @@ html,body{height:100%;overflow:hidden;background:#0c0c10;-webkit-font-smoothing:
   left:var(--ind-left,12px);width:var(--ind-w,32px);
 }
 .app-tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:10px;background:none;border:none;cursor:pointer;transition:background .18s;white-space:nowrap;font-family:inherit;}
-.app-tab:active{background:rgba(255,255,255,0.05)}
+.app-tab:active{background:rgba(44,36,22,0.07)}
 .tab-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:box-shadow .3s}
 .app-tab[data-app="amulet"] .tab-icon{background:rgba(212,169,106,0.12)}
 .app-tab[data-app="finance"] .tab-icon{background:rgba(78,204,163,0.12)}
@@ -53,7 +53,7 @@ html,body{height:100%;overflow:hidden;background:#0c0c10;-webkit-font-smoothing:
 .app-tab.active .tab-sub{opacity:.7}
 .tab-sep{width:1px;height:26px;background:var(--edge);flex-shrink:0;margin:0 2px}
 .home-btn{margin-left:auto;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--bg2);border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:background .18s,border-color .18s;}
-.home-btn.active{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+.home-btn.active{background:rgba(44,36,22,0.1);border-color:rgba(44,36,22,0.18)}
 #frames{flex:1;position:relative;overflow:hidden}
 .frame-wrap{position:absolute;inset:0;overflow-y:auto;transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform;}
 .frame-wrap.left{transform:translateX(-100%)}
@@ -63,16 +63,16 @@ html,body{height:100%;overflow:hidden;background:#0c0c10;-webkit-font-smoothing:
 
 /* HOME */
 .home-wrap{min-height:100%;display:flex;flex-direction:column;background:var(--bg);position:relative}
-.home-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 40% at 10% 0%,rgba(78,204,163,0.08) 0%,transparent 55%),radial-gradient(ellipse 70% 40% at 95% 100%,rgba(212,169,106,0.07) 0%,transparent 55%)}
-.home-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.016) 1px,transparent 1px);background-size:42px 42px}
+.home-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 40% at 10% 0%,rgba(212,169,106,0.15) 0%,transparent 55%),radial-gradient(ellipse 70% 40% at 95% 100%,rgba(78,180,120,0.10) 0%,transparent 55%)}
+.home-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(44,36,22,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(44,36,22,0.06) 1px,transparent 1px);background-size:42px 42px}
 .home-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:32px 22px calc(32px + var(--safe-b))}
 .live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(78,204,163,0.07);border:1px solid rgba(78,204,163,0.16);font-size:9px;font-weight:600;color:var(--mint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;font-family:'Sarabun',sans-serif;}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px var(--mint);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .home-title{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1.1;margin-bottom:9px}
-.home-sub{font-size:13px;color:rgba(240,238,232,0.38);line-height:1.75;margin-bottom:30px;font-family:'Sarabun',sans-serif;}
+.home-sub{font-size:13px;color:rgba(44,36,22,0.38);line-height:1.75;margin-bottom:30px;font-family:'Sarabun',sans-serif;}
 .home-cards{display:flex;flex-direction:column;gap:11px;margin-bottom:auto}
-.hcard{display:flex;align-items:center;gap:13px;padding:16px 17px;border-radius:16px;border:1px solid var(--edge);background:rgba(255,255,255,0.022);cursor:pointer;transition:transform .16s,border-color .16s,background .16s;position:relative;overflow:hidden;}
+.hcard{display:flex;align-items:center;gap:13px;padding:16px 17px;border-radius:16px;border:1px solid var(--edge);background:rgba(44,36,22,0.04);cursor:pointer;transition:transform .16s,border-color .16s,background .16s;position:relative;overflow:hidden;}
 .hcard:active{transform:scale(0.985)}
 .hcard.amber{border-color:rgba(212,169,106,0.22)}
 .hcard.amber:active{background:rgba(212,169,106,0.05);border-color:rgba(212,169,106,0.4)}
@@ -85,12 +85,28 @@ html,body{height:100%;overflow:hidden;background:#0c0c10;-webkit-font-smoothing:
 .hcard-name{font-family:'Syne',sans-serif;font-size:15.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:3px}
 .hcard.amber .hcard-name{color:var(--amber)}
 .hcard.mint .hcard-name{color:var(--mint)}
-.hcard-desc{font-size:11px;color:rgba(240,238,232,0.36);line-height:1.55;font-family:'Sarabun',sans-serif;}
-.hcard-arr{font-size:17px;color:rgba(255,255,255,0.18);flex-shrink:0}
-.home-footer{margin-top:28px;text-align:center;font-size:9.5px;color:rgba(240,238,232,0.15);letter-spacing:.5px;font-family:'Sarabun',sans-serif;}
-.home-footer span{color:rgba(240,238,232,0.28)}
+.hcard-desc{font-size:11px;color:rgba(44,36,22,0.36);line-height:1.55;font-family:'Sarabun',sans-serif;}
+.hcard-arr{font-size:17px;color:rgba(44,36,22,0.2);flex-shrink:0}
+.home-footer{margin-top:28px;text-align:center;font-size:9.5px;color:rgba(44,36,22,0.15);letter-spacing:.5px;font-family:'Sarabun',sans-serif;}
+.home-footer span{color:rgba(44,36,22,0.28)}
 
 /* SCOPED APP CSS */
+
+.app-amulet {
+  --bg:        #faf7f2;
+  --bg2:       #f0ebe2;
+  --bg3:       #e8e2d9;
+  --surface:   #ffffff;
+  --border:    rgba(44,36,22,0.12);
+  --border2:   rgba(44,36,22,0.08);
+  --ink:       #2c2416;
+  --ink2:      #5a4d3e;
+  --ink3:      #8a7d6b;
+  --ink4:      #b8a898;
+  --amber:     #b5843a;
+  --amber2:    #d9a554;
+}
+
 .app-amulet { 
 .app-amulet {
   --bg:        #fafaf8;
@@ -593,16 +609,36 @@ body {
 
 .page-pad { padding: 0 16px; }
  }
+
+.app-finance {
+  --bg:       #faf7f2;
+  --bg2:      #f0ebe2;
+  --bg3:      #e8e2d9;
+  --bg4:      #e0d9ce;
+  --surface:  #ffffff;
+  --border:   rgba(44,36,22,0.12);
+  --border2:  rgba(44,36,22,0.08);
+  --ink:      #2c2416;
+  --ink2:     #5a4d3e;
+  --ink3:     #8a7d6b;
+  --ink4:     #b8a898;
+  --mint:     #2a9d7a;
+  --mint2:    #1e7a5e;
+  --mint3:    rgba(42,157,122,0.15);
+  --card-bg:  rgba(44,36,22,0.04);
+  --card-hover: rgba(44,36,22,0.07);
+}
+
 .app-finance { 
 .app-finance {
-  --bg:       #0f0f13;
-  --bg2:      #16161c;
-  --bg3:      #1e1e26;
+  --bg:       #faf7f2;
+  --bg2:      #e8e2d9;
+  --bg3:      #e0d9ce;
   --surface:  #222230;
   --edge:     rgba(255,255,255,0.07);
   --edge2:    rgba(255,255,255,0.12);
 
-  --text:     #f0eee8;
+  --text:     #2c2416;
   --text2:    #8a8898;
   --text3:    #44424e;
 
@@ -712,7 +748,7 @@ body::before {
 }
 .nav-pill {
   display:flex;
-  background:rgba(22,22,28,0.95);
+  background:rgba(250,247,242,0.97);
   backdrop-filter:blur(30px);
   border:1px solid var(--edge2);
   border-radius:20px;
@@ -1108,6 +1144,203 @@ body::before {
   min-height: 100%;
   font-family: 'Sarabun', sans-serif;
 }
+
+/* ── THEME VARIABLES ── */
+:root {
+  --theme-transition: background .3s, color .3s, border-color .3s;
+}
+
+/* LIGHT THEME (cream/ivory) */
+body.theme-light {
+  --bg:    #faf7f2;
+  --bg2:   #f0ebe2;
+  --bg3:   #e8e2d9;
+  --bg4:   #e0d9ce;
+  --surface: #ffffff;
+  --border:  rgba(44,36,22,0.12);
+  --ink:   #2c2416;
+  --ink2:  #5a4d3e;
+  --ink3:  #8a7d6b;
+  --ink4:  #b8a898;
+  --bar-bg: rgba(250,247,242,0.97);
+  --edge:  rgba(44,36,22,0.1);
+  --text:  #2c2416;
+  --text2: #8a7d6b;
+  --card:  rgba(44,36,22,0.04);
+  --shadow: rgba(44,36,22,0.12);
+  --grid:  rgba(44,36,22,0.06);
+}
+
+/* DARK THEME (warm brown - eye care) */
+body.theme-dark {
+  --bg:      #1e1a14;
+  --bg2:     #261f17;
+  --bg3:     #2e261c;
+  --bg4:     #382e22;
+  --surface: #2e261c;
+  --border:  rgba(210,170,90,0.18);
+  --ink:     #f0d890;
+  --ink2:    #d4b870;
+  --ink3:    #a88c50;
+  --ink4:    #7a6438;
+  --bar-bg:  rgba(30,26,20,0.97);
+  --edge:    rgba(210,170,90,0.15);
+  --text:    #f0d890;
+  --text2:   #a88c50;
+  --card:    rgba(210,170,90,0.06);
+  --shadow:  rgba(0,0,0,0.5);
+  --grid:    rgba(210,170,90,0.05);
+  --amber:   #d4a96a;
+  --mint:    #4ecca3;
+}
+
+/* Apply theme vars */
+body { background: var(--bg); transition: var(--theme-transition); }
+
+#top-bar {
+  background: var(--bar-bg) !important;
+  border-bottom: 1px solid var(--edge) !important;
+}
+
+#frame-home .home-wrap { background: var(--bg) !important; }
+#frame-home .home-bg {
+  background:
+    radial-gradient(ellipse 80% 40% at 10% 0%,  rgba(212,169,106,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 40% at 95% 100%, rgba(78,180,120,0.09) 0%, transparent 55%) !important;
+}
+#frame-home .home-grid {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) !important;
+}
+
+.home-title { color: var(--text) !important; }
+.home-sub   { color: var(--ink3) !important; }
+.home-footer { color: var(--ink4) !important; }
+.home-footer span { color: var(--ink3) !important; }
+
+.hcard { background: var(--card) !important; border-color: var(--edge) !important; }
+.tab-name { color: var(--text2) !important; }
+.tab-sub  { color: var(--text2) !important; }
+.app-tab.active .tab-name { color: var(--text) !important; }
+.app-tab[data-app="amulet"].active .tab-name { color: var(--amber) !important; }
+.app-tab[data-app="finance"].active .tab-name { color: var(--mint) !important; }
+.home-btn { background: var(--bg2) !important; border-color: var(--edge) !important; }
+.home-btn.active { background: var(--bg3) !important; }
+
+/* Theme toggle button */
+.theme-btn {
+  margin-left:6px; flex-shrink:0;
+  width:32px; height:32px; border-radius:50%;
+  background:var(--bg2); border:1px solid var(--edge);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; cursor:pointer;
+  transition:background .2s, border-color .2s;
+}
+.theme-btn:active { background: var(--bg3); }
+
+/* App CSS overrides using theme vars */
+.app-amulet, .app-finance {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.app-amulet *, .app-finance * {
+  transition: background .3s, color .3s, border-color .3s;
+}
+
+/* Amulet overrides */
+.app-amulet { --bg: var(--bg); --bg2: var(--bg2); --bg3: var(--bg3); --ink: var(--ink); --ink2: var(--ink2); --ink3: var(--ink3); }
+
+/* Finance overrides */
+.app-finance { --bg: var(--bg); --bg2: var(--bg2); --bg3: var(--bg3); --ink: var(--ink); --ink2: var(--ink2); --ink3: var(--ink3); }
+
+
+/* ── DARK MODE DEEP OVERRIDES ── */
+body.theme-dark .app-amulet,
+body.theme-dark .app-finance {
+  background: #1e1a14 !important;
+  color: #f0d890 !important;
+}
+
+/* Cards, containers */
+body.theme-dark .app-amulet *[style*="background: #fff"],
+body.theme-dark .app-amulet *[style*="background:#fff"],
+body.theme-dark .app-finance *[style*="background: #fff"],
+body.theme-dark .app-finance *[style*="background:#fff"] {
+  background: #2e261c !important;
+}
+
+/* All text in dark mode apps */
+body.theme-dark .app-amulet h1,
+body.theme-dark .app-amulet h2,
+body.theme-dark .app-amulet h3,
+body.theme-dark .app-amulet h4,
+body.theme-dark .app-amulet p,
+body.theme-dark .app-amulet span,
+body.theme-dark .app-amulet label,
+body.theme-dark .app-amulet div,
+body.theme-dark .app-finance h1,
+body.theme-dark .app-finance h2,
+body.theme-dark .app-finance h3,
+body.theme-dark .app-finance h4,
+body.theme-dark .app-finance p,
+body.theme-dark .app-finance span,
+body.theme-dark .app-finance label {
+  color: #f0d890 !important;
+}
+
+/* Inputs */
+body.theme-dark .app-amulet input,
+body.theme-dark .app-amulet select,
+body.theme-dark .app-amulet textarea,
+body.theme-dark .app-finance input,
+body.theme-dark .app-finance select,
+body.theme-dark .app-finance textarea {
+  background: #261f17 !important;
+  color: #f0d890 !important;
+  border-color: rgba(210,170,90,0.25) !important;
+}
+
+/* Buttons */
+body.theme-dark .app-amulet button:not([class*="primary"]):not([class*="btn-"]),
+body.theme-dark .app-finance button:not([class*="primary"]):not([class*="btn-"]) {
+  background: #2e261c !important;
+  color: #f0d890 !important;
+  border-color: rgba(210,170,90,0.2) !important;
+}
+
+/* Nav/bottom bar in amulet */
+body.theme-dark .app-amulet .nav-item span,
+body.theme-dark .app-amulet .bottom-nav {
+  background: #1e1a14 !important;
+  color: #a88c50 !important;
+}
+
+/* Sections/cards with white bg */
+body.theme-dark .app-amulet section,
+body.theme-dark .app-amulet .card,
+body.theme-dark .app-amulet .panel,
+body.theme-dark .app-finance .card,
+body.theme-dark .app-finance section,
+body.theme-dark .app-finance .panel {
+  background: #261f17 !important;
+  border-color: rgba(210,170,90,0.15) !important;
+}
+
+/* Home screen dark */
+body.theme-dark #frame-home .home-wrap { background: #1e1a14 !important; }
+body.theme-dark .home-title  { color: #f0d890 !important; }
+body.theme-dark .home-sub    { color: #a88c50 !important; }
+body.theme-dark .hcard       { background: rgba(210,170,90,0.06) !important; border-color: rgba(210,170,90,0.18) !important; }
+body.theme-dark .hcard-desc  { color: #a88c50 !important; }
+body.theme-dark .home-footer { color: #7a6438 !important; }
+body.theme-dark .home-footer span { color: #a88c50 !important; }
+body.theme-dark .tab-name    { color: #a88c50 !important; }
+body.theme-dark .app-tab[data-app="amulet"].active .tab-name { color: #d4a96a !important; }
+body.theme-dark .app-tab[data-app="finance"].active .tab-name { color: #4ecca3 !important; }
+body.theme-dark .home-btn    { background: #261f17 !important; border-color: rgba(210,170,90,0.15) !important; }
+body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgba(210,170,90,0.15) !important; }
+
 </style>
 </head>
 <body>
@@ -1123,6 +1356,7 @@ body::before {
       <div><div class="tab-name">Flo Finance</div><div class="tab-sub">AI Money</div></div>
     </button>
     <button class="home-btn active" id="home-btn" onclick="switchApp('home')">🏠</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="เปลี่ยนธีม">🌙</button>
   </div>
   <div id="frames">
     <!-- HOME -->
@@ -1767,10 +2001,35 @@ function updateInd(app){
 
 window.addEventListener('load',()=>updateInd('home'));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  const body = document.body;
+  const btn = document.getElementById('theme-btn');
+  if (body.classList.contains('theme-light')) {
+    body.classList.replace('theme-light', 'theme-dark');
+    btn.textContent = '☀️';
+    localStorage.setItem('app-theme', 'dark');
+  } else {
+    body.classList.replace('theme-dark', 'theme-light');
+    btn.textContent = '🌙';
+    localStorage.setItem('app-theme', 'light');
+  }
+}
+
+// Init theme
+(function(){
+  const saved = localStorage.getItem('app-theme') || 'light';
+  document.body.classList.add('theme-' + saved);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+
 </script>
 
 <!-- AMULET JS -->
 <script>
+(function(){
 
 // ── DATA ──
 let db = JSON.parse(localStorage.getItem('amulet-nexus-v2')||'null') ||
@@ -2289,10 +2548,12 @@ renderCloud();
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
 
+})();
 </script>
 
 <!-- FINANCE JS -->
 <script>
+(function(){
 
 // ═══════════════════════════════
 //  DATA LAYER
@@ -2541,7 +2802,7 @@ function renderTrendChart() {
   ctx.clearRect(0,0,W,H);
 
   // grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.strokeStyle = 'rgba(44,36,22,0.06)';
   ctx.lineWidth = 1;
   [0.25,0.5,0.75,1].forEach(p => {
     const y = pad.t + (H-pad.t-pad.b) * (1-p);
@@ -2927,6 +3188,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 }
 
+})();
 </script>
 
 </body>
