@@ -20,13 +20,13 @@ html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
 /* ══ DARK THEME — ALWAYS ON ══ */
 body, body.theme-light, body.theme-dark {
   --bg:#121212; --bg2:#1a1a1a; --bg3:#242424; --bg4:#2e2e2e;
-  --surface:#1a1a1a; --border:rgba(255,255,255,0.1); --edge:rgba(255,255,255,0.07);
-  --ink:#ffffff; --ink2:#e0e0e0; --ink3:#aaaaaa; --ink4:#666666;
-  --text:#ffffff; --text2:#aaaaaa;
-  --bar-bg:rgba(18,18,18,0.97);
-  --card:rgba(255,255,255,0.06); --shadow:rgba(0,0,0,0.6);
-  --amber:#f0a830; --mint:#4ecca3; --green:#2ecc71; --red:#e74c3c;
-  background:#121212 !important; color:#ffffff !important;
+  --surface:#1a1a1a; --border:rgba(212,175,55,0.2); --edge:rgba(212,175,55,0.12);
+  --ink:#d4af37; --ink2:#c9a227; --ink3:#a07820; --ink4:#7a5c18;
+  --text:#d4af37; --text2:#a07820;
+  --bar-bg:rgba(10,10,10,0.97);
+  --card:rgba(212,175,55,0.07); --shadow:rgba(0,0,0,0.7);
+  --amber:#f0c040; --mint:#4ecca3; --green:#2ecc71; --red:#e74c3c;
+  background:#121212 !important; color:#d4af37 !important;
 }
 
 /* ── SHELL ── */
@@ -47,7 +47,7 @@ body{font-family:'DM Sans','Sarabun',sans-serif;background:var(--bg);color:var(-
 .app-tab{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:10px;background:none;border:none;cursor:pointer;transition:background .15s;font-family:inherit;}
 .app-tab:active{background:var(--card)}
 .tab-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--card);}
-.tab-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:-.2px;}
+.tab-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--amber);letter-spacing:-.2px;}
 .tab-sub{font-size:8px;color:var(--ink4);letter-spacing:.5px;text-transform:uppercase;margin-top:1px;}
 .app-tab.active .tab-name{color:var(--text);}
 .app-tab[data-app="amulet"].active .tab-name{color:var(--amber);}
@@ -75,7 +75,7 @@ body{font-family:'DM Sans','Sarabun',sans-serif;background:var(--bg);color:var(-
 .hcard{display:flex;align-items:center;gap:13px;padding:16px;border-radius:16px;border:1px solid var(--edge);background:var(--surface);cursor:pointer;transition:transform .15s,box-shadow .15s;margin-bottom:10px;}
 .hcard:active{transform:scale(0.98);box-shadow:0 2px 12px var(--shadow);}
 .hcard-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--bg2);}
-.hcard-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.hcard-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--amber);margin-bottom:3px;}
 .hcard.amber .hcard-name{color:var(--amber);}
 .hcard.mint .hcard-name{color:var(--mint);}
 .hcard-desc{font-size:11px;color:var(--ink3);line-height:1.5;}
@@ -88,14 +88,14 @@ body{font-family:'DM Sans','Sarabun',sans-serif;background:var(--bg);color:var(-
 
 /* ── SHELL ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;background:#121212;-webkit-font-smoothing:antialiased}
 :root{
   --safe-t:env(safe-area-inset-top,0px);
   --safe-b:env(safe-area-inset-bottom,0px);
   --bar-h:54px;
   --mint:#4ecca3;--amber:#d4a96a;
   --text:#2c2416;--text2:#8a7d6b;
-  --bg:#faf7f2;--bg2:#f0ebe2;
+  --bg:#121212;--bg2:#1a1a1a;
   --edge:rgba(44,36,22,0.1);
 }
 #shell{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative}
@@ -166,10 +166,10 @@ html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:
 /* SCOPED APP CSS */
 
 .app-amulet {
-  --bg:        #faf7f2;
-  --bg2:       #f0ebe2;
+  --bg:#121212;
+  --bg2:#1a1a1a;
   --bg3:       #e8e2d9;
-  --surface:   #ffffff;
+  --surface:#1a1a1a;
   --border:    rgba(44,36,22,0.12);
   --border2:   rgba(44,36,22,0.08);
   --ink:       #2c2416;
@@ -182,10 +182,10 @@ html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:
 
 .app-amulet { 
 .app-amulet {
-  --bg:        #fafaf8;
+  --bg:#121212;
   --bg2:       #f3f2ef;
   --bg3:       #ede9e2;
-  --surface:   #ffffff;
+  --surface:#1a1a1a;
   --border:    #e8e4dc;
   --border2:   #d8d3c9;
 
@@ -211,6 +211,7 @@ html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:
   --r-sm:      9px;
   --safe-b:    env(safe-area-inset-bottom, 16px);
   --nav-h:     64px;
+  --content-pb: 80px;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -271,7 +272,7 @@ body {
 .pages-wrap {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(var(--nav-h) + var(--safe-b));
+  padding-bottom: 100px;
   background: var(--bg);
 }
 .pages-wrap::-webkit-scrollbar { display:none; }
@@ -685,11 +686,11 @@ body {
  }
 
 .app-finance {
-  --bg:       #faf7f2;
-  --bg2:      #f0ebe2;
+  --bg:#121212;
+  --bg2:#1a1a1a;
   --bg3:      #e8e2d9;
   --bg4:      #e0d9ce;
-  --surface:  #ffffff;
+  --surface:#1a1a1a;
   --border:   rgba(44,36,22,0.12);
   --border2:  rgba(44,36,22,0.08);
   --ink:      #2c2416;
@@ -705,7 +706,7 @@ body {
 
 .app-finance { 
 .app-finance {
-  --bg:       #faf7f2;
+  --bg:#121212;
   --bg2:      #e8e2d9;
   --bg3:      #e0d9ce;
   --surface:  #222230;
@@ -1226,19 +1227,19 @@ body::before {
 
 /* ══ LIGHT THEME — clean white ══ */
 body.theme-light {
-  --bg:      #ffffff;
-  --bg2:     #f5f5f5;
-  --bg3:     #ebebeb;
+  --bg:#121212;
+  --bg2:#1a1a1a;
+  --bg3:#242424;
   --bg4:     #e0e0e0;
-  --surface: #ffffff;
+  --surface:#1a1a1a;
   --border:  rgba(0,0,0,0.12);
-  --ink:     #111111;
-  --ink2:    #333333;
+  --ink:#d4af37;
+  --ink2:#c9a227333;
   --ink3:    #666666;
   --ink4:    #999999;
   --bar-bg:  rgba(255,255,255,0.98);
   --edge:    rgba(0,0,0,0.1);
-  --text:    #111111;
+  --text:#d4af37;
   --text2:   #555555;
   --card:    #f5f5f5;
   --shadow:  rgba(0,0,0,0.1);
@@ -1404,11 +1405,18 @@ function updateInd(app){
 window.addEventListener('load',()=>updateInd('home'));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
+/* ── GOLD TEXT SHADOW ── */
+body, body * {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+button, input, select, textarea {
+  text-shadow: none;
+}
 /* ── FORCE DARK ALL ELEMENTS ── */
 input, select, textarea, button {
   background: var(--bg3) !important;
-  color: var(--ink) !important;
-  border-color: var(--border) !important;
+  color: var(--amber) !important;
+  border-color: var(--edge) !important;
 }
 input::placeholder { color: var(--ink4) !important; }
 .modal, .modal-overlay, .bottom-sheet, [class*="modal"], [class*="sheet"] {
@@ -1416,6 +1424,52 @@ input::placeholder { color: var(--ink4) !important; }
   color: var(--ink) !important;
 }
 * { scrollbar-color: var(--bg4) var(--bg2); }
+
+
+/* ── FORCE DARK: KEY ELEMENTS ── */
+.nav {
+  background: #1a1a1a !important;
+  border-top: 1px solid rgba(212,175,55,0.2) !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  transform: none !important;
+  max-width: 100% !important;
+  z-index: 999 !important;
+}
+.ss-dots, .app-bar, .header, [class*="header"], [class*="bottom-bar"] {
+  background: #1a1a1a !important;
+  border-color: rgba(212,175,55,0.15) !important;
+}
+.ss-dot-item, .nav-btn, .ss-dot {
+  background: rgba(212,175,55,0.3) !important;
+}
+.ss-dot-item.active, .ss-dot.active {
+  background: #d4af37 !important;
+}
+.nav-btn.active { color: var(--amber) !important; }
+.nav-btn { color: #a07820 !important; }
+
+/* Fix amulet header white bar */
+.sec-h, [class*="sec-h"], .page-header, .top-strip {
+  background: #121212 !important;
+  color: #d4af37 !important;
+}
+
+/* Fix any remaining white cards/surfaces */
+.card, .fc, .stat-tile, .portfolio-item, .item-card, [class*="card"], [class*="tile"] {
+  background: #1a1a1a !important;
+  border-color: rgba(212,175,55,0.15) !important;
+  color: #d4af37 !important;
+}
+
+/* Fix modal/sheet backgrounds */
+.modal-wrap, .modal-box, .bottom-sheet, .sell-modal, .edit-modal, .detail-modal,
+[class*="modal"], [class*="sheet"], [class*="overlay"] {
+  background: #1a1a1a !important;
+  color: #d4af37 !important;
+}
 
 </style>
 </head>
@@ -2509,7 +2563,7 @@ async function uploadToSheets(){
     // Try Apps Script URL first (no OAuth needed)
     if(scriptURL){
       const payload={action:'sync',data:db};
-      const res=await fetch(scriptURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const res=await fetch(scriptURL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),redirect:'follow'});
       const d=await res.json();
       if(d.status==='ok'){
         localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));
