@@ -2601,7 +2601,7 @@ async function downloadFromSheets(){
           if(idx>=0) db[idx]={...db[idx],...item};
           else db.push(item);
         });
-        saveDB(); renderDashboard(); renderPortfolio();
+        saveDb(); renderDashboard(); renderPortfolio();
         showToast('✅ ดึงข้อมูลสำเร็จ '+d.data.length+' รายการ');
         if(ind) ind.style.display='none';
         return;
@@ -2801,6 +2801,8 @@ function testConnection() {
   try{window.testConnection=testConnection;}catch(e){}
   try{window.saveScriptURL=saveScriptURL;}catch(e){}
   try{window.driveLogin=driveLogin;}catch(e){}
+  try{window.handlePhotosWithDrive=handlePhotosWithDrive;}catch(e){}
+  try{window.handleEditPhotos=handleEditPhotos;}catch(e){}
   try{window.driveLogout=driveLogout;}catch(e){}
   try{window.sheetsLogin=sheetsLogin;}catch(e){}
   try{window.sheetsLogout=sheetsLogout;}catch(e){}
