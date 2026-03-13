@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#faf7f2">
+<meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,6 +13,91 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sarabun:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
+/* ── RESET ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ══ LIGHT THEME ══ */
+body.theme-light {
+  --bg:#ffffff; --bg2:#f5f5f5; --bg3:#ebebeb; --bg4:#e0e0e0;
+  --surface:#ffffff; --border:rgba(0,0,0,0.12); --edge:rgba(0,0,0,0.08);
+  --ink:#111111; --ink2:#333333; --ink3:#666666; --ink4:#999999;
+  --text:#111111; --text2:#555555;
+  --bar-bg:rgba(255,255,255,0.97);
+  --card:rgba(0,0,0,0.04); --shadow:rgba(0,0,0,0.1);
+  --amber:#b5760a; --mint:#0a9271; --green:#1a7a4a; --red:#c0392b;
+  background:#ffffff; color:#111111;
+}
+
+/* ══ DARK THEME ══ */
+body.theme-dark {
+  --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --bg4:#363636;
+  --surface:#1e1e1e; --border:rgba(255,255,255,0.12); --edge:rgba(255,255,255,0.08);
+  --ink:#ffffff; --ink2:#e0e0e0; --ink3:#aaaaaa; --ink4:#666666;
+  --text:#ffffff; --text2:#aaaaaa;
+  --bar-bg:rgba(18,18,18,0.97);
+  --card:rgba(255,255,255,0.05); --shadow:rgba(0,0,0,0.5);
+  --amber:#f0a830; --mint:#4ecca3; --green:#2ecc71; --red:#e74c3c;
+  background:#121212; color:#ffffff;
+}
+
+/* ── SHELL ── */
+body{font-family:'DM Sans','Sarabun',sans-serif;background:var(--bg);color:var(--ink);transition:background .25s,color .25s;}
+#shell{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;}
+#top-bar{
+  flex-shrink:0;height:58px;
+  background:var(--bar-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--edge);display:flex;align-items:center;
+  padding:0 10px;gap:4px;z-index:200;position:relative;
+}
+#top-bar::after{
+  content:'';position:absolute;bottom:0;height:2.5px;border-radius:2px 2px 0 0;
+  background:var(--ind-color,var(--ink));
+  transition:left .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1),background .3s;
+  left:var(--ind-left,10px);width:var(--ind-w,40px);
+}
+.app-tab{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:10px;background:none;border:none;cursor:pointer;transition:background .15s;font-family:inherit;}
+.app-tab:active{background:var(--card)}
+.tab-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--card);}
+.tab-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:-.2px;}
+.tab-sub{font-size:8px;color:var(--ink4);letter-spacing:.5px;text-transform:uppercase;margin-top:1px;}
+.app-tab.active .tab-name{color:var(--text);}
+.app-tab[data-app="amulet"].active .tab-name{color:var(--amber);}
+.app-tab[data-app="finance"].active .tab-name{color:var(--mint);}
+.tab-sep{width:1px;height:24px;background:var(--edge);flex-shrink:0;margin:0 2px;}
+.home-btn,.theme-btn{margin-left:0;flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--bg2);border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:background .15s;}
+.home-btn{margin-left:auto;}
+.theme-btn{margin-left:6px;}
+.home-btn:active,.theme-btn:active{background:var(--bg3)}
+#frames{flex:1;position:relative;overflow:hidden;}
+.frame-wrap{position:absolute;inset:0;overflow-y:auto;transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform;}
+.frame-wrap.left{transform:translateX(-100%)}
+.frame-wrap.center{transform:translateX(0)}
+.frame-wrap.right{transform:translateX(100%)}
+.frame-wrap.notrans{transition:none!important;}
+
+/* ── HOME ── */
+.home-wrap{min-height:100%;background:var(--bg);display:flex;flex-direction:column;}
+.home-content{flex:1;display:flex;flex-direction:column;padding:32px 20px 40px;}
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:var(--card);border:1px solid var(--edge);font-size:9px;font-weight:600;color:var(--mint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--mint);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.home-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--ink);letter-spacing:-1px;line-height:1.1;margin-bottom:8px;}
+.home-sub{font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:28px;}
+.hcard{display:flex;align-items:center;gap:13px;padding:16px;border-radius:16px;border:1px solid var(--edge);background:var(--surface);cursor:pointer;transition:transform .15s,box-shadow .15s;margin-bottom:10px;}
+.hcard:active{transform:scale(0.98);box-shadow:0 2px 12px var(--shadow);}
+.hcard-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--bg2);}
+.hcard-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.hcard.amber .hcard-name{color:var(--amber);}
+.hcard.mint .hcard-name{color:var(--mint);}
+.hcard-desc{font-size:11px;color:var(--ink3);line-height:1.5;}
+.hcard-arr{font-size:18px;color:var(--ink4);margin-left:auto;}
+.home-footer{margin-top:auto;padding-top:24px;text-align:center;font-size:9px;color:var(--ink4);}
+.home-footer span{color:var(--ink3);}
+
+/* ── APP CONTAINERS ── */
+.app-amulet,.app-finance{min-height:100%;background:var(--bg);color:var(--ink);}
+
 /* ── SHELL ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#faf7f2;-webkit-font-smoothing:antialiased}
@@ -584,7 +669,8 @@ body {
 .sdot.off { background:var(--ink4); }
 .cloud-act { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; padding:12px; border-radius:9px; border:none; cursor:pointer; font-family:'DM Sans','Sarabun',sans-serif; font-size:13px; font-weight:500; margin-bottom:8px; transition:opacity .15s; }
 .cloud-act:active { opacity:.75; }
-.cloud-act.p { background:var(--ink); color:#fff; }
+.cloud-act.p { background:var(--amber,#b5843a); color:#fff !important; }
+.cloud-act.s { background:var(--bg2); color:var(--ink) !important; border:1px solid var(--border); }
 .cloud-act.s { background:var(--bg2); color:var(--ink); border:1px solid var(--border); }
 .cloud-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .cloud-2 .cloud-act { margin-bottom:0; }
@@ -1147,50 +1233,52 @@ body::before {
 
 /* ── THEME VARIABLES ── */
 :root {
-  --theme-transition: background .3s, color .3s, border-color .3s;
+  --theme-transition: background .25s, color .25s, border-color .25s, box-shadow .25s;
 }
 
-/* LIGHT THEME (cream/ivory) */
+/* ══ LIGHT THEME — clean white ══ */
 body.theme-light {
-  --bg:    #faf7f2;
-  --bg2:   #f0ebe2;
-  --bg3:   #e8e2d9;
-  --bg4:   #e0d9ce;
+  --bg:      #ffffff;
+  --bg2:     #f5f5f5;
+  --bg3:     #ebebeb;
+  --bg4:     #e0e0e0;
   --surface: #ffffff;
-  --border:  rgba(44,36,22,0.12);
-  --ink:   #2c2416;
-  --ink2:  #5a4d3e;
-  --ink3:  #8a7d6b;
-  --ink4:  #b8a898;
-  --bar-bg: rgba(250,247,242,0.97);
-  --edge:  rgba(44,36,22,0.1);
-  --text:  #2c2416;
-  --text2: #8a7d6b;
-  --card:  rgba(44,36,22,0.04);
-  --shadow: rgba(44,36,22,0.12);
-  --grid:  rgba(44,36,22,0.06);
+  --border:  rgba(0,0,0,0.12);
+  --ink:     #111111;
+  --ink2:    #333333;
+  --ink3:    #666666;
+  --ink4:    #999999;
+  --bar-bg:  rgba(255,255,255,0.98);
+  --edge:    rgba(0,0,0,0.1);
+  --text:    #111111;
+  --text2:   #555555;
+  --card:    #f5f5f5;
+  --shadow:  rgba(0,0,0,0.1);
+  --grid:    rgba(0,0,0,0.06);
+  --amber:   #b5760a;
+  --mint:    #0a9271;
 }
 
-/* DARK THEME (warm brown - eye care) */
+/* ══ DARK THEME — deep gray ══ */
 body.theme-dark {
-  --bg:      #1e1a14;
-  --bg2:     #261f17;
-  --bg3:     #2e261c;
-  --bg4:     #382e22;
-  --surface: #2e261c;
-  --border:  rgba(210,170,90,0.18);
-  --ink:     #f0d890;
-  --ink2:    #d4b870;
-  --ink3:    #a88c50;
-  --ink4:    #7a6438;
-  --bar-bg:  rgba(30,26,20,0.97);
-  --edge:    rgba(210,170,90,0.15);
-  --text:    #f0d890;
-  --text2:   #a88c50;
-  --card:    rgba(210,170,90,0.06);
-  --shadow:  rgba(0,0,0,0.5);
-  --grid:    rgba(210,170,90,0.05);
-  --amber:   #d4a96a;
+  --bg:      #121212;
+  --bg2:     #1e1e1e;
+  --bg3:     #2a2a2a;
+  --bg4:     #363636;
+  --surface: #1e1e1e;
+  --border:  rgba(255,255,255,0.12);
+  --ink:     #ffffff;
+  --ink2:    #e0e0e0;
+  --ink3:    #aaaaaa;
+  --ink4:    #666666;
+  --bar-bg:  rgba(18,18,18,0.98);
+  --edge:    rgba(255,255,255,0.1);
+  --text:    #ffffff;
+  --text2:   #aaaaaa;
+  --card:    rgba(255,255,255,0.06);
+  --shadow:  rgba(0,0,0,0.6);
+  --grid:    rgba(255,255,255,0.04);
+  --amber:   #f0a830;
   --mint:    #4ecca3;
 }
 
@@ -1255,92 +1343,78 @@ body { background: var(--bg); transition: var(--theme-transition); }
 .app-finance { --bg: var(--bg); --bg2: var(--bg2); --bg3: var(--bg3); --ink: var(--ink); --ink2: var(--ink2); --ink3: var(--ink3); }
 
 
-/* ── DARK MODE DEEP OVERRIDES ── */
+/* ── DARK MODE OVERRIDES ── */
 body.theme-dark .app-amulet,
 body.theme-dark .app-finance {
-  background: #1e1a14 !important;
-  color: #f0d890 !important;
+  background: #121212 !important;
+  color: #ffffff !important;
 }
-
-/* Cards, containers */
-body.theme-dark .app-amulet *[style*="background: #fff"],
-body.theme-dark .app-amulet *[style*="background:#fff"],
-body.theme-dark .app-finance *[style*="background: #fff"],
-body.theme-dark .app-finance *[style*="background:#fff"] {
-  background: #2e261c !important;
+body.theme-dark .app-amulet *,
+body.theme-dark .app-finance * {
+  border-color: rgba(255,255,255,0.1) !important;
 }
-
-/* All text in dark mode apps */
+/* Cards/surfaces */
+body.theme-dark .app-amulet .card,
+body.theme-dark .app-amulet section,
+body.theme-dark .app-amulet .fc,
+body.theme-dark .app-finance .card,
+body.theme-dark .app-finance section,
+body.theme-dark .app-finance .fc {
+  background: #1e1e1e !important;
+}
+/* All text */
+body.theme-dark .app-amulet p,
+body.theme-dark .app-amulet span,
+body.theme-dark .app-amulet div,
 body.theme-dark .app-amulet h1,
 body.theme-dark .app-amulet h2,
 body.theme-dark .app-amulet h3,
-body.theme-dark .app-amulet h4,
-body.theme-dark .app-amulet p,
-body.theme-dark .app-amulet span,
 body.theme-dark .app-amulet label,
-body.theme-dark .app-amulet div,
+body.theme-dark .app-finance p,
+body.theme-dark .app-finance span,
+body.theme-dark .app-finance div,
 body.theme-dark .app-finance h1,
 body.theme-dark .app-finance h2,
 body.theme-dark .app-finance h3,
-body.theme-dark .app-finance h4,
-body.theme-dark .app-finance p,
-body.theme-dark .app-finance span,
 body.theme-dark .app-finance label {
-  color: #f0d890 !important;
+  color: #ffffff !important;
 }
-
-/* Inputs */
 body.theme-dark .app-amulet input,
 body.theme-dark .app-amulet select,
 body.theme-dark .app-amulet textarea,
 body.theme-dark .app-finance input,
 body.theme-dark .app-finance select,
 body.theme-dark .app-finance textarea {
-  background: #261f17 !important;
-  color: #f0d890 !important;
-  border-color: rgba(210,170,90,0.25) !important;
+  background: #2a2a2a !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.15) !important;
 }
-
-/* Buttons */
-body.theme-dark .app-amulet button:not([class*="primary"]):not([class*="btn-"]),
-body.theme-dark .app-finance button:not([class*="primary"]):not([class*="btn-"]) {
-  background: #2e261c !important;
-  color: #f0d890 !important;
-  border-color: rgba(210,170,90,0.2) !important;
-}
-
-/* Nav/bottom bar in amulet */
-body.theme-dark .app-amulet .nav-item span,
-body.theme-dark .app-amulet .bottom-nav {
-  background: #1e1a14 !important;
-  color: #a88c50 !important;
-}
-
-/* Sections/cards with white bg */
-body.theme-dark .app-amulet section,
-body.theme-dark .app-amulet .card,
-body.theme-dark .app-amulet .panel,
-body.theme-dark .app-finance .card,
-body.theme-dark .app-finance section,
-body.theme-dark .app-finance .panel {
-  background: #261f17 !important;
-  border-color: rgba(210,170,90,0.15) !important;
-}
-
 /* Home screen dark */
-body.theme-dark #frame-home .home-wrap { background: #1e1a14 !important; }
-body.theme-dark .home-title  { color: #f0d890 !important; }
-body.theme-dark .home-sub    { color: #a88c50 !important; }
-body.theme-dark .hcard       { background: rgba(210,170,90,0.06) !important; border-color: rgba(210,170,90,0.18) !important; }
-body.theme-dark .hcard-desc  { color: #a88c50 !important; }
-body.theme-dark .home-footer { color: #7a6438 !important; }
-body.theme-dark .home-footer span { color: #a88c50 !important; }
-body.theme-dark .tab-name    { color: #a88c50 !important; }
-body.theme-dark .app-tab[data-app="amulet"].active .tab-name { color: #d4a96a !important; }
+body.theme-dark #frame-home .home-wrap { background: #121212 !important; }
+body.theme-dark .home-title  { color: #ffffff !important; }
+body.theme-dark .home-sub    { color: #aaaaaa !important; }
+body.theme-dark .hcard       { background: #1e1e1e !important; border-color: rgba(255,255,255,0.1) !important; }
+body.theme-dark .hcard-desc  { color: #aaaaaa !important; }
+body.theme-dark .home-footer { color: #555555 !important; }
+body.theme-dark .home-footer span { color: #aaaaaa !important; }
+body.theme-dark .tab-name    { color: #aaaaaa !important; }
+body.theme-dark .app-tab[data-app="amulet"].active .tab-name { color: #f0a830 !important; }
 body.theme-dark .app-tab[data-app="finance"].active .tab-name { color: #4ecca3 !important; }
-body.theme-dark .home-btn    { background: #261f17 !important; border-color: rgba(210,170,90,0.15) !important; }
-body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgba(210,170,90,0.15) !important; }
+body.theme-dark .home-btn    { background: #1e1e1e !important; border-color: rgba(255,255,255,0.1) !important; }
+body.theme-dark .theme-btn   { background: #1e1e1e !important; border-color: rgba(255,255,255,0.1) !important; }
 
+function updateInd(app){
+  const bar=document.getElementById('top-bar');
+  bar.style.setProperty('--ind-color',COLORS[app]||'#fff');
+  const el=app==='home'?document.getElementById('home-btn'):document.querySelector('.app-tab[data-app="'+app+'"]');
+  if(!el) return;
+  const br=bar.getBoundingClientRect(),er=el.getBoundingClientRect();
+  bar.style.setProperty('--ind-left',(er.left-br.left)+'px');
+  bar.style.setProperty('--ind-w',er.width+'px');
+}
+
+window.addEventListener('load',()=>updateInd('home'));
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </style>
 </head>
 <body>
@@ -1355,41 +1429,30 @@ body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgb
       <div class="tab-icon">💸</div>
       <div><div class="tab-name">Flo Finance</div><div class="tab-sub">AI Money</div></div>
     </button>
-    <button class="home-btn active" id="home-btn" onclick="switchApp('home')">🏠</button>
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="เปลี่ยนธีม">🌙</button>
+    <button class="home-btn" id="home-btn" onclick="switchApp('home')">🏠</button>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
   </div>
   <div id="frames">
-    <!-- HOME -->
     <div class="frame-wrap center" id="frame-home">
       <div class="home-wrap">
-        <div class="home-bg"></div><div class="home-grid"></div>
         <div class="home-content">
           <div class="live-badge"><div class="live-dot"></div>2 Apps · Ready</div>
           <div class="home-title">สวัสดีครับ 👋</div>
           <div class="home-sub">เลือกแอปที่ต้องการ<br>หรือกดแท็บด้านบนได้เลย</div>
-          <div class="home-cards">
-            <div class="hcard amber" onclick="switchApp('amulet')">
-              <div class="hcard-icon">🪬</div>
-              <div class="hcard-body">
-                <div class="hcard-name">Amulet Nexus</div>
-                <div class="hcard-desc">ติดตามพอร์ตพระเครื่อง · กำไร/ขาดทุน · Google Sheets</div>
-              </div>
-              <div class="hcard-arr">›</div>
-            </div>
-            <div class="hcard mint" onclick="switchApp('finance')">
-              <div class="hcard-icon">💸</div>
-              <div class="hcard-body">
-                <div class="hcard-name">Flo Finance</div>
-                <div class="hcard-desc">บันทึกรายรับ-รายจ่าย · AI วิเคราะห์การเงิน · Claude AI</div>
-              </div>
-              <div class="hcard-arr">›</div>
-            </div>
+          <div class="hcard amber" onclick="switchApp('amulet')">
+            <div class="hcard-icon">🪬</div>
+            <div><div class="hcard-name">Amulet Nexus</div><div class="hcard-desc">ติดตามพอร์ตพระเครื่อง · กำไร/ขาดทุน · Google Sheets</div></div>
+            <div class="hcard-arr">›</div>
+          </div>
+          <div class="hcard mint" onclick="switchApp('finance')">
+            <div class="hcard-icon">💸</div>
+            <div><div class="hcard-name">Flo Finance</div><div class="hcard-desc">บันทึกรายรับ-รายจ่าย · AI วิเคราะห์การเงิน · Claude AI</div></div>
+            <div class="hcard-arr">›</div>
           </div>
           <div class="home-footer">by <span>สรรธาร พชสิทธิ์</span> · Powered by Claude AI</div>
         </div>
       </div>
     </div>
-    <!-- AMULET -->
     <div class="frame-wrap right" id="frame-amulet">
       <div class="app-amulet">
 <div id="app">
@@ -1576,14 +1639,12 @@ body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgb
       </div>
 
       <div class="fc">
-<div class="fc-head">Google Sheets — ซิงค์ข้อมูล</div>
-<div class="fc-body" style="text-align:center;padding:18px">
-<div style="font-size:28px;margin-bottom:8px">📊</div>
-<div id="sheets-status-text" style="font-size:12.5px;color:var(--ink3);margin-bottom:14px">ยังไม่ได้เชื่อมต่อ Google Sheets</div>
-<button class="cloud-act p" id="sheets-login-btn" onclick="sheetsLogin()">เชื่อมต่อ Google Sheets</button>
-<button class="cloud-act s" id="sheets-logout-btn" onclick="sheetsLogout()" style="display:none">ยกเลิกการเชื่อมต่อ</button>
-</div>
-</div>
+        <div class="fc-head">Google Apps Script URL</div>
+        <div class="fc-body">
+          <div class="field"><label>Web App URL</label><input type="url" id="script-url" placeholder="https://script.google.com/macros/s/..."></div>
+          <button class="cloud-act s" onclick="testConnection()">ทดสอบการเชื่อมต่อ</button>
+        </div>
+      </div>
 
       <div class="fc">
         <div class="fc-head">Google Drive — รูปภาพ</div>
@@ -1761,9 +1822,8 @@ body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgb
 </div>
 
 <div class="toast" id="toast"></div>
-      </div>
+</div>
     </div>
-    <!-- FINANCE -->
     <div class="frame-wrap right" id="frame-finance">
       <div class="app-finance">
 <div id="app">
@@ -1956,7 +2016,7 @@ body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgb
 </div>
 
 <div class="toast" id="toast"></div>
-      </div>
+</div>
     </div>
   </div>
 </div>
@@ -1964,7 +2024,7 @@ body.theme-dark .theme-btn   { background: #261f17 !important; border-color: rgb
 <script>
 // ── SHELL SWITCHER ──
 const ORDER = ['amulet','home','finance'];
-const COLORS = {amulet:'#d4a96a',finance:'#4ecca3',home:'#ffffff'};
+const COLORS = {amulet:'var(--amber)',finance:'var(--mint)',home:'var(--ink)'};
 let cur = 'home';
 
 function switchApp(next){
@@ -1993,7 +2053,7 @@ function switchApp(next){
 
 function updateInd(app){
   const bar=document.getElementById('top-bar');
-  bar.style.setProperty('--ind-color',COLORS[app]||'#fff');
+  bar.style.setProperty('--ind-color', app==='amulet'?'var(--amber)':app==='finance'?'var(--mint)':'var(--ink)');
   const el=app==='home'?document.getElementById('home-btn'):document.querySelector('.app-tab[data-app="'+app+'"]');
   if(!el) return;
   const br=bar.getBoundingClientRect(),er=el.getBoundingClientRect();
@@ -2001,32 +2061,30 @@ function updateInd(app){
   bar.style.setProperty('--ind-w',er.width+'px');
 }
 
-window.addEventListener('load',()=>updateInd('home'));
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
-
-// ── THEME TOGGLE ──
-function toggleTheme() {
-  const body = document.body;
-  const btn = document.getElementById('theme-btn');
-  if (body.classList.contains('theme-light')) {
-    body.classList.replace('theme-light', 'theme-dark');
-    btn.textContent = '☀️';
-    localStorage.setItem('app-theme', 'dark');
-  } else {
-    body.classList.replace('theme-dark', 'theme-light');
-    btn.textContent = '🌙';
-    localStorage.setItem('app-theme', 'light');
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.getElementById('theme-btn');
+  if(body.classList.contains('theme-light')){
+    body.classList.replace('theme-light','theme-dark');
+    btn.textContent='☀️';
+    localStorage.setItem('app-theme','dark');
+  }else{
+    body.classList.replace('theme-dark','theme-light');
+    btn.textContent='🌙';
+    localStorage.setItem('app-theme','light');
   }
 }
 
-// Init theme
+// Init
 (function(){
-  const saved = localStorage.getItem('app-theme') || 'light';
-  document.body.classList.add('theme-' + saved);
-  const btn = document.getElementById('theme-btn');
-  if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+  const saved=localStorage.getItem('app-theme')||'light';
+  document.body.classList.add('theme-'+saved);
+  const btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent=saved==='dark'?'☀️':'🌙';
+  updateInd('home');
 })();
 
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 
 <!-- AMULET JS -->
