@@ -1678,61 +1678,68 @@ input::placeholder { color: var(--ink4) !important; }
 
     <!-- CLOUD -->
     <div class="page" id="page-cloud">
-      <div class="sec-h"><span class="sec-title">Cloud & Export</span></div>
+      <div class="sec-h"><span class="sec-title">Cloud & Sync</span></div>
 
-      <div class="cloud-status">
-        <div class="sdot off" id="status-dot"></div>
-        <div>
-          <div id="status-text" style="font-size:13px;font-weight:500">ไม่ได้เชื่อมต่อ</div>
-          <div id="status-sub" style="font-size:10.5px;color:var(--ink3)">กรอก URL เพื่อเชื่อมต่อ</div>
-        </div>
-        <button onclick="syncNow()" style="margin-left:auto;background:var(--bg2);border:1px solid var(--border);color:var(--ink);padding:7px 13px;border-radius:8px;font-family:'DM Sans','Sarabun',sans-serif;font-size:11.5px;font-weight:500;cursor:pointer">Sync</button>
-      </div>
-
-      <div class="fc">
-        <div class="fc-head">Google Apps Script URL</div>
-        <div class="fc-body">
-          <div class="field"><label>Web App URL</label><input type="url" id="script-url" placeholder="https://script.google.com/macros/s/..." oninput="saveScriptURL()"></div>
-          <button class="cloud-act s" onclick="testConnection()">ทดสอบการเชื่อมต่อ</button>
-        </div>
-      </div>
-
-      <div class="fc">
-        <div class="fc-head">Google Drive — รูปภาพ</div>
-        <div class="fc-body" style="text-align:center;padding:18px">
-          <div style="font-size:28px;margin-bottom:8px">🔗</div>
-          <div id="drive-status-text" style="font-size:12.5px;color:var(--ink3);margin-bottom:14px">ยังไม่ได้เชื่อมต่อ Google Drive</div>
-          <button class="cloud-act p" id="drive-login-btn" onclick="driveLogin()">เชื่อมต่อ Google Drive</button>
-          <button class="cloud-act s" id="drive-logout-btn" onclick="driveLogout()" style="display:none">ยกเลิกการเชื่อมต่อ</button>
-          <div id="drive-folder-info" style="font-size:10px;color:var(--ink3);display:none;margin-top:6px">📁 บันทึกใน: <span id="drive-folder-name" style="color:var(--amber)">Amulet Nexus Photos</span></div>
-        </div>
-      </div>
-
-      <div class="fc">
-        <div class="fc-head">Google Sheets — ซิงค์ข้อมูล</div>
-        <div class="fc-body" id="sheets-cloud-body">
-          <div id="sheets-status-area" style="text-align:center;padding:8px 0 14px">
-            <div style="font-size:28px;margin-bottom:6px" id="sheets-icon">📊</div>
-            <div id="sheets-status-text" style="font-size:13px;color:var(--ink3)">ยังไม่ได้เชื่อมต่อ Google Sheets</div>
+      <!-- STATUS CARD -->
+      <div class="fc" id="google-status-card">
+        <div class="fc-body" style="padding:20px 16px">
+          <div style="text-align:center;margin-bottom:16px">
+            <div style="font-size:36px;margin-bottom:8px" id="google-icon">☁️</div>
+            <div id="google-status-title" style="font-size:15px;font-weight:700;color:var(--amber);margin-bottom:4px">ยังไม่ได้เชื่อมต่อ Google</div>
+            <div id="google-status-detail" style="font-size:11px;color:var(--ink3);line-height:1.6">กด "เชื่อมต่อ Google" เพื่อใช้งาน<br>Sheets (ซิงค์ข้อมูล) + Drive (รูปภาพ)</div>
           </div>
-          <button class="cloud-act p" id="sheets-login-btn" onclick="sheetsLogin()">เชื่อมต่อ Google Sheets</button>
-          <button class="cloud-act s" id="sheets-logout-btn" onclick="sheetsLogout()" style="display:none">ยกเลิกการเชื่อมต่อ</button>
-          <div style="height:10px"></div>
-          <button class="cloud-act p" onclick="uploadToSheets()" style="background:#2a7a4a">อัปโหลดขึ้น Google Sheets</button>
-          <button class="cloud-act s" onclick="downloadFromSheets()">ดึงข้อมูลจาก Google Sheets</button>
-          <div id="sync-indicator" style="display:none;font-size:11px;color:var(--ink3);text-align:center;margin-top:6px">กำลังซิงค์...</div>
+          <!-- NOT CONNECTED -->
+          <div id="google-connect-area">
+            <button class="cloud-act p" onclick="connectGoogle()" style="font-size:14px;padding:14px">
+              🔗 เชื่อมต่อ Google
+            </button>
+            <div id="connect-error" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);border-radius:10px;font-size:11.5px;color:#e74c3c;line-height:1.6"></div>
+          </div>
+          <!-- CONNECTED -->
+          <div id="google-connected-area" style="display:none">
+            <div style="background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);border-radius:12px;padding:12px;margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:16px">📊</span>
+                <span id="sheets-conn-status" style="font-size:12px;font-weight:600;color:#2ecc71">Google Sheets: เชื่อมต่อแล้ว ✅</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:16px">📁</span>
+                <span id="drive-conn-status" style="font-size:12px;font-weight:600;color:#2ecc71">Google Drive: เชื่อมต่อแล้ว ✅</span>
+              </div>
+            </div>
+            <button class="cloud-act s" onclick="disconnectGoogle()" style="font-size:12px">ยกเลิกการเชื่อมต่อ</button>
+          </div>
         </div>
       </div>
 
+      <!-- SYNC ACTIONS -->
       <div class="fc">
-        <div class="fc-head">Export / Import</div>
+        <div class="fc-head">ซิงค์ข้อมูล</div>
+        <div class="fc-body">
+          <div id="sync-log" style="min-height:36px;margin-bottom:12px;padding:10px 12px;background:var(--bg3);border-radius:10px;font-size:11.5px;color:var(--ink3);line-height:1.6">พร้อมซิงค์ข้อมูล</div>
+          <button class="cloud-act p" onclick="uploadToSheets()" style="background:#1a6e3a;margin-bottom:8px">
+            ⬆️ อัปโหลดขึ้น Google Sheets
+          </button>
+          <button class="cloud-act s" onclick="downloadFromSheets()">
+            ⬇️ ดึงข้อมูลจาก Google Sheets
+          </button>
+          <div id="sync-indicator" style="display:none;text-align:center;padding:8px;font-size:11px;color:var(--amber)">⏳ กำลังซิงค์...</div>
+          <div id="last-sync-info" style="margin-top:8px;font-size:10px;color:var(--ink4);text-align:center"></div>
+        </div>
+      </div>
+
+      <!-- EXPORT / IMPORT -->
+      <div class="fc">
+        <div class="fc-head">Export / Import (ไม่ต้องเชื่อมต่อ)</div>
         <div class="fc-body">
           <div class="cloud-2" style="margin-bottom:8px">
-            <button class="cloud-act s" onclick="exportCSV()">CSV</button>
-            <button class="cloud-act s" onclick="exportJSON()">JSON Backup</button>
+            <button class="cloud-act s" onclick="exportCSV()">📄 CSV</button>
+            <button class="cloud-act s" onclick="exportJSON()">💾 JSON Backup</button>
           </div>
-          <button class="cloud-act s" onclick="document.getElementById('import-file').click()">Import JSON</button>
+          <button class="cloud-act s" onclick="document.getElementById('import-file').click()">📥 Import JSON</button>
           <input type="file" id="import-file" accept=".json" onchange="importJSON(event)" style="display:none">
+          <!-- hidden legacy inputs -->
+          <input type="url" id="script-url" style="display:none">
         </div>
       </div>
 
@@ -2153,7 +2160,9 @@ let currentFilter='all', searchQuery='';
 let scriptURL = localStorage.getItem('amulet-script-url')||'';
 let autoSync  = localStorage.getItem('amulet-auto-sync') !== 'false';
 
-if (scriptURL) document.getElementById('script-url').value = scriptURL;
+if (scriptURL) { const el=document.getElementById('script-url'); if(el) el.value = scriptURL; }
+// Init Google UI after DOM ready
+setTimeout(updateGoogleUI, 100);
 
 if (!db.length) {
   db = [
@@ -2562,7 +2571,7 @@ async function uploadToSheets(){
   if(ind) ind.style.display='block';
   try{
     if(!sheetsAccessToken){
-      showToast('กรุณากด "เชื่อมต่อ Google Sheets" ก่อนครับ',true);
+      syncLog('❌ กรุณากด "เชื่อมต่อ Google" ก่อนครับ', true);
       if(ind) ind.style.display='none';
       return;
     }
@@ -2598,7 +2607,7 @@ async function downloadFromSheets(){
   if(ind) ind.style.display='block';
   try{
     if(!sheetsAccessToken){
-      showToast('กรุณากด "เชื่อมต่อ Google Sheets" ก่อนครับ',true);
+      syncLog('❌ กรุณากด "เชื่อมต่อ Google" ก่อนครับ', true);
       if(ind) ind.style.display='none';
       return;
     }
@@ -2786,6 +2795,104 @@ function testConnection() {
     .catch(e => showToast('❌ เชื่อมต่อไม่ได้: ' + e.message, true));
 }
 
+
+// ── SINGLE GOOGLE LOGIN (Sheets + Drive) ──
+function syncLog(msg, isError=false) {
+  const el = document.getElementById('sync-log');
+  if (el) {
+    el.textContent = msg;
+    el.style.color = isError ? '#e74c3c' : 'var(--ink3)';
+  }
+  showToast(msg, isError);
+}
+
+function setConnectError(msg) {
+  const el = document.getElementById('connect-error');
+  if (!el) return;
+  if (msg) { el.style.display = 'block'; el.textContent = '❌ ' + msg; }
+  else { el.style.display = 'none'; }
+}
+
+function updateGoogleUI() {
+  const hasSheets = !!sheetsAccessToken;
+  const hasDrive = !!driveAccessToken;
+  const connected = hasSheets || hasDrive;
+
+  const connectArea = document.getElementById('google-connect-area');
+  const connectedArea = document.getElementById('google-connected-area');
+  const icon = document.getElementById('google-icon');
+  const title = document.getElementById('google-status-title');
+  const detail = document.getElementById('google-status-detail');
+  const sheetsStatus = document.getElementById('sheets-conn-status');
+  const driveStatus = document.getElementById('drive-conn-status');
+  const lastSync = document.getElementById('last-sync-info');
+
+  if (!connectArea) return;
+
+  if (connected) {
+    connectArea.style.display = 'none';
+    connectedArea.style.display = 'block';
+    icon.textContent = '✅';
+    title.textContent = 'เชื่อมต่อ Google แล้ว';
+    detail.textContent = '';
+    if (sheetsStatus) sheetsStatus.textContent = hasSheets ? 'Google Sheets: เชื่อมต่อแล้ว ✅' : 'Google Sheets: ❌ ยังไม่ได้เชื่อมต่อ';
+    if (sheetsStatus) sheetsStatus.style.color = hasSheets ? '#2ecc71' : '#e74c3c';
+    if (driveStatus) driveStatus.textContent = hasDrive ? 'Google Drive: เชื่อมต่อแล้ว ✅' : 'Google Drive: ❌ ยังไม่ได้เชื่อมต่อ';
+    if (driveStatus) driveStatus.style.color = hasDrive ? '#2ecc71' : '#e74c3c';
+  } else {
+    connectArea.style.display = 'block';
+    connectedArea.style.display = 'none';
+    icon.textContent = '☁️';
+    title.textContent = 'ยังไม่ได้เชื่อมต่อ Google';
+  }
+  const ls = localStorage.getItem('amulet-last-sync');
+  if (lastSync) lastSync.textContent = ls ? 'ซิงค์ล่าสุด: ' + ls : '';
+}
+
+async function connectGoogle() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    setConnectError('กรุณาเปิดผ่าน https://a-nx.vercel.app เท่านั้น (ไม่ใช่ไฟล์ในเครื่อง)');
+    return;
+  }
+  setConnectError('');
+  showToast('กำลังเชื่อมต่อ Google...');
+  try {
+    // Login Sheets + Drive scope ในครั้งเดียว
+    const COMBINED_SCOPE = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: SHEETS_CLIENT_ID,
+      scope: COMBINED_SCOPE,
+      callback: async resp => {
+        if (resp.error) {
+          setConnectError('Login ไม่สำเร็จ: ' + resp.error);
+          return;
+        }
+        sheetsAccessToken = resp.access_token;
+        driveAccessToken = resp.access_token;
+        localStorage.setItem('sheets-access-token', sheetsAccessToken);
+        localStorage.setItem('drive-access-token', driveAccessToken);
+        setConnectError('');
+        showToast('✅ เชื่อมต่อ Google สำเร็จ!');
+        updateGoogleUI();
+        // Auto-create Drive folder
+        await ensureDriveFolder();
+      }
+    });
+    client.requestAccessToken();
+  } catch(e) {
+    setConnectError('เกิดข้อผิดพลาด: ' + e.message);
+  }
+}
+
+function disconnectGoogle() {
+  sheetsAccessToken = null;
+  driveAccessToken = null;
+  localStorage.removeItem('sheets-access-token');
+  localStorage.removeItem('drive-access-token');
+  showToast('ยกเลิกการเชื่อมต่อแล้ว');
+  updateGoogleUI();
+}
+
 // ── EXPOSE TO WINDOW ──
   try{window.showPage=showPage;}catch(e){}
   try{window.openAdd=openAdd;}catch(e){}
@@ -2828,6 +2935,9 @@ function testConnection() {
   try{window.toggleNotify=toggleNotify;}catch(e){}
   try{window.renderDashboard=renderDashboard;}catch(e){}
   try{window.renderCloud=renderCloud;}catch(e){}
+  try{window.connectGoogle=connectGoogle;}catch(e){}
+  try{window.disconnectGoogle=disconnectGoogle;}catch(e){}
+  try{window.updateGoogleUI=updateGoogleUI;}catch(e){}
 })();
 </script>
 
