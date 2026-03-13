@@ -272,7 +272,7 @@ body {
 .pages-wrap {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 100px;
+  padding-bottom: 8px;
   background: var(--bg);
 }
 .pages-wrap::-webkit-scrollbar { display:none; }
@@ -284,13 +284,14 @@ body {
 
 /* ── NAV ── */
 .nav {
-  position: fixed; bottom:0; left:50%; transform:translateX(-50%);
-  width:100%; max-width:480px;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+  position: relative;
+  width:100%;
+  background: #1a1a1a;
+  border-top: 1px solid rgba(212,175,55,0.2);
   display: flex;
-  padding-bottom: var(--safe-b);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 100;
+  flex-shrink: 0;
 }
 .nav-btn {
   flex: 1; display:flex; flex-direction:column; align-items:center; gap:3px;
@@ -1430,13 +1431,7 @@ input::placeholder { color: var(--ink4) !important; }
 .nav {
   background: #1a1a1a !important;
   border-top: 1px solid rgba(212,175,55,0.2) !important;
-  bottom: 0 !important;
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  transform: none !important;
-  max-width: 100% !important;
-  z-index: 999 !important;
+  flex-shrink: 0 !important;
 }
 .ss-dots, .app-bar, .header, [class*="header"], [class*="bottom-bar"] {
   background: #1a1a1a !important;
@@ -1714,10 +1709,16 @@ input::placeholder { color: var(--ink4) !important; }
       </div>
 
       <div class="fc">
-        <div class="fc-head">ซิงค์ข้อมูล</div>
-        <div class="fc-body">
-          <div style="font-size:11.5px;color:var(--ink3);margin-bottom:11px">Auto-sync: บันทึกรายการใหม่จะซิงค์อัตโนมัติ</div>
-          <button class="cloud-act p" onclick="uploadToSheets()">อัปโหลดขึ้น Google Sheets</button>
+        <div class="fc-head">Google Sheets — ซิงค์ข้อมูล</div>
+        <div class="fc-body" id="sheets-cloud-body">
+          <div id="sheets-status-area" style="text-align:center;padding:8px 0 14px">
+            <div style="font-size:28px;margin-bottom:6px" id="sheets-icon">📊</div>
+            <div id="sheets-status-text" style="font-size:13px;color:var(--ink3)">ยังไม่ได้เชื่อมต่อ Google Sheets</div>
+          </div>
+          <button class="cloud-act p" id="sheets-login-btn" onclick="sheetsLogin()">เชื่อมต่อ Google Sheets</button>
+          <button class="cloud-act s" id="sheets-logout-btn" onclick="sheetsLogout()" style="display:none">ยกเลิกการเชื่อมต่อ</button>
+          <div style="height:10px"></div>
+          <button class="cloud-act p" onclick="uploadToSheets()" style="background:#2a7a4a">อัปโหลดขึ้น Google Sheets</button>
           <button class="cloud-act s" onclick="downloadFromSheets()">ดึงข้อมูลจาก Google Sheets</button>
           <div id="sync-indicator" style="display:none;font-size:11px;color:var(--ink3);text-align:center;margin-top:6px">กำลังซิงค์...</div>
         </div>
@@ -2560,28 +2561,34 @@ async function uploadToSheets(){
   const ind=document.getElementById('sync-indicator');
   if(ind) ind.style.display='block';
   try{
-    // Try Apps Script URL first (no OAuth needed)
-    if(scriptURL){
-      const payload={action:'sync',data:db};
-      const res=await fetch(scriptURL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),redirect:'follow'});
-      const d=await res.json();
-      if(d.status==='ok'){
-        localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));
-        showToast('✅ ซิงค์สำเร็จ! '+d.count+' รายการ');
-        if(ind) ind.style.display='none';
-        return;
-      } else { showToast('❌ Apps Script: '+(d.message||'error'),true); }
+    if(!sheetsAccessToken){
+      showToast('กรุณากด "เชื่อมต่อ Google Sheets" ก่อนครับ',true);
+      if(ind) ind.style.display='none';
+      return;
     }
-    // Fallback: Sheets API (OAuth)
-    if(!sheetsAccessToken){showToast('กรุณากรอก Apps Script URL หรือเชื่อมต่อ Google Sheets',true);if(ind)ind.style.display='none';return;}
-    const headers=['ID','ชื่อ','ประเภท','ช่องทางซื้อ','ความน่าเชื่อถือ','ราคาซื้อ','วันที่ซื้อ','สถานะ','ราคาขาย','วันที่ขาย','ช่องทางขาย','กำไร/ขาดทุน','%','บันทึก'];
-    const rows=db.map(i=>{const p=calcPnL(i);return[i.id,i.name,i.type,i.channel,i.trust,i.buyPrice,i.buyDate,i.status==='sold'?'ขายแล้ว':'ถืออยู่',i.sellPrice||'',i.sellDate||'',i.sellChannel||'',p?p.pnl:'',p?p.pct.toFixed(1)+'%':'',i.note||''];});
+    const headers=['ID','ชื่อ','ประเภท','ช่องทางซื้อ','ความน่าเชื่อถือ','ราคาซื้อ','วันที่ซื้อ','สถานะ','ราคาขาย','วันที่ขาย','ช่องทางขาย','กำไร/ขาดทุน','ROI%','บันทึก','จำนวนรูป'];
+    const rows=db.map(i=>{
+      const p=calcPnL(i);
+      return[i.id,i.name||'',i.type||'',i.channel||'',i.trust||'',
+             i.buyPrice||'',i.buyDate||'',i.status==='sold'?'ขายแล้ว':'ถืออยู่',
+             i.sellPrice||'',i.sellDate||'',i.sellChannel||'',
+             p?p.pnl:'',p?p.pct.toFixed(1)+'%':'',i.note||'',i.photos?.length||0];
+    });
     const values=[headers,...rows];
-    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A1:N${values.length+1}:clear`,{method:'POST',headers:{Authorization:'Bearer '+sheetsAccessToken,'Content-Type':'application/json'}});
-    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A1?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+sheetsAccessToken,'Content-Type':'application/json'},body:JSON.stringify({values})});
+    const base=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}`;
+    const auth={Authorization:'Bearer '+sheetsAccessToken,'Content-Type':'application/json'};
+    await fetch(`${base}!A1:O${values.length+1}:clear`,{method:'POST',headers:auth});
+    const res=await fetch(`${base}!A1?valueInputOption=USER_ENTERED`,{method:'PUT',headers:auth,body:JSON.stringify({values})});
     const d=await res.json();
-    if(d.updatedCells){localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));showToast('✅ ซิงค์ขึ้น Google Sheets แล้ว '+rows.length+' รายการ');}
-    else{showToast('❌ '+(d.error?.message||'unknown'),true);}
+    if(d.error&&d.error.code===401){
+      sheetsAccessToken=null;localStorage.removeItem('sheets-access-token');
+      showToast('Token หมดอายุ กรุณาเชื่อมต่อใหม่',true);updateSheetsUI();
+    } else if(d.updatedCells){
+      localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));
+      showToast('✅ อัปโหลดสำเร็จ '+rows.length+' รายการ');
+    } else {
+      showToast('❌ '+(d.error?.message||JSON.stringify(d)),true);
+    }
   }catch(e){showToast('❌ '+e.message,true);}
   if(ind) ind.style.display='none';
 }
@@ -2590,29 +2597,35 @@ async function downloadFromSheets(){
   const ind=document.getElementById('sync-indicator');
   if(ind) ind.style.display='block';
   try{
-    // Try Apps Script URL first
-    if(scriptURL){
-      const res=await fetch(scriptURL+'?action=get');
-      const d=await res.json();
-      if(d.status==='ok'&&d.data&&d.data.length>0){
-        // Merge: keep local items not in sheets, add/update from sheets
-        d.data.forEach(item=>{
-          const idx=db.findIndex(x=>x.id===item.id);
-          if(idx>=0) db[idx]={...db[idx],...item};
-          else db.push(item);
-        });
-        saveDb(); renderDashboard(); renderPortfolio();
-        showToast('✅ ดึงข้อมูลสำเร็จ '+d.data.length+' รายการ');
-        if(ind) ind.style.display='none';
-        return;
-      } else { showToast('⚠️ ไม่พบข้อมูลใน Sheet หรือ error: '+(d.message||''),true); }
+    if(!sheetsAccessToken){
+      showToast('กรุณากด "เชื่อมต่อ Google Sheets" ก่อนครับ',true);
+      if(ind) ind.style.display='none';
+      return;
     }
-    // Fallback: Sheets API
-    if(!sheetsAccessToken){showToast('กรุณากรอก Apps Script URL หรือเชื่อมต่อ Google Sheets',true);if(ind)ind.style.display='none';return;}
-    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:N1000`,{headers:{Authorization:'Bearer '+sheetsAccessToken}});
+    const base=`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}`;
+    const res=await fetch(`${base}!A2:O1000`,{headers:{Authorization:'Bearer '+sheetsAccessToken}});
     const d=await res.json();
-    if(d.values&&d.values.length>0){showToast('✅ ดึงข้อมูลสำเร็จ '+d.values.length+' รายการ');}
-    else{showToast('⚠️ ไม่พบข้อมูลใน Sheet',true);}
+    if(d.error&&d.error.code===401){
+      sheetsAccessToken=null;localStorage.removeItem('sheets-access-token');
+      showToast('Token หมดอายุ กรุณาเชื่อมต่อใหม่',true);updateSheetsUI();
+    } else if(d.values&&d.values.length>0){
+      let added=0,updated=0;
+      d.values.filter(r=>r[0]).forEach(r=>{
+        const item={id:r[0],name:r[1],type:r[2],channel:r[3],trust:r[4],
+          buyPrice:parseFloat(r[5])||0,buyDate:r[6]||'',
+          status:r[7]==='ขายแล้ว'?'sold':'held',
+          sellPrice:r[8]?parseFloat(r[8]):undefined,
+          sellDate:r[9]||'',sellChannel:r[10]||'',
+          note:r[13]||'',photos:[]};
+        const idx=db.findIndex(x=>x.id===item.id);
+        if(idx>=0){db[idx]={...db[idx],...item};updated++;}
+        else{db.push(item);added++;}
+      });
+      saveDb();renderDashboard();renderPortfolio();
+      showToast(`✅ ดึงข้อมูลสำเร็จ เพิ่ม ${added} แก้ไข ${updated} รายการ`);
+    } else {
+      showToast('⚠️ ไม่พบข้อมูลใน Sheet',true);
+    }
   }catch(e){showToast('❌ '+e.message,true);}
   if(ind) ind.style.display='none';
 }
@@ -2803,6 +2816,11 @@ function testConnection() {
   try{window.driveLogin=driveLogin;}catch(e){}
   try{window.handlePhotosWithDrive=handlePhotosWithDrive;}catch(e){}
   try{window.handleEditPhotos=handleEditPhotos;}catch(e){}
+  try{window.toggleSell=toggleSell;}catch(e){}
+  try{window.toggleEditSell=toggleEditSell;}catch(e){}
+  try{window.setType=setType;}catch(e){}
+  try{window.sendChat=sendChat;}catch(e){}
+  try{window.saveTx=saveTx;}catch(e){}
   try{window.driveLogout=driveLogout;}catch(e){}
   try{window.sheetsLogin=sheetsLogin;}catch(e){}
   try{window.sheetsLogout=sheetsLogout;}catch(e){}
