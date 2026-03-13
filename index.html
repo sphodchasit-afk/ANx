@@ -17,28 +17,16 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-/* ══ LIGHT THEME ══ */
-body.theme-light {
-  --bg:#ffffff; --bg2:#f5f5f5; --bg3:#ebebeb; --bg4:#e0e0e0;
-  --surface:#ffffff; --border:rgba(0,0,0,0.12); --edge:rgba(0,0,0,0.08);
-  --ink:#111111; --ink2:#333333; --ink3:#666666; --ink4:#999999;
-  --text:#111111; --text2:#555555;
-  --bar-bg:rgba(255,255,255,0.97);
-  --card:rgba(0,0,0,0.04); --shadow:rgba(0,0,0,0.1);
-  --amber:#b5760a; --mint:#0a9271; --green:#1a7a4a; --red:#c0392b;
-  background:#ffffff; color:#111111;
-}
-
-/* ══ DARK THEME ══ */
-body.theme-dark {
-  --bg:#121212; --bg2:#1e1e1e; --bg3:#2a2a2a; --bg4:#363636;
-  --surface:#1e1e1e; --border:rgba(255,255,255,0.12); --edge:rgba(255,255,255,0.08);
+/* ══ DARK THEME — ALWAYS ON ══ */
+body, body.theme-light, body.theme-dark {
+  --bg:#121212; --bg2:#1a1a1a; --bg3:#242424; --bg4:#2e2e2e;
+  --surface:#1a1a1a; --border:rgba(255,255,255,0.1); --edge:rgba(255,255,255,0.07);
   --ink:#ffffff; --ink2:#e0e0e0; --ink3:#aaaaaa; --ink4:#666666;
   --text:#ffffff; --text2:#aaaaaa;
   --bar-bg:rgba(18,18,18,0.97);
-  --card:rgba(255,255,255,0.05); --shadow:rgba(0,0,0,0.5);
+  --card:rgba(255,255,255,0.06); --shadow:rgba(0,0,0,0.6);
   --amber:#f0a830; --mint:#4ecca3; --green:#2ecc71; --red:#e74c3c;
-  background:#121212; color:#ffffff;
+  background:#121212 !important; color:#ffffff !important;
 }
 
 /* ── SHELL ── */
@@ -1204,7 +1192,7 @@ body::before {
 }
 .toggle::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:var(--text2); top:3px; left:3px; transition:all .2s; }
 .toggle.on { background:var(--mint2); }
-.toggle.on::after { transform:translateX(20px); background:#fff; }
+.toggle.on::after { transform:translateX(20px); background:var(--bg); }
 
 /* ── EMPTY ── */
 .empty { text-align:center; padding:60px 20px; }
@@ -1415,6 +1403,20 @@ function updateInd(app){
 
 window.addEventListener('load',()=>updateInd('home'));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+/* ── FORCE DARK ALL ELEMENTS ── */
+input, select, textarea, button {
+  background: var(--bg3) !important;
+  color: var(--ink) !important;
+  border-color: var(--border) !important;
+}
+input::placeholder { color: var(--ink4) !important; }
+.modal, .modal-overlay, .bottom-sheet, [class*="modal"], [class*="sheet"] {
+  background: var(--bg2) !important;
+  color: var(--ink) !important;
+}
+* { scrollbar-color: var(--bg4) var(--bg2); }
+
 </style>
 </head>
 <body>
@@ -1430,7 +1432,7 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catc
       <div><div class="tab-name">Flo Finance</div><div class="tab-sub">AI Money</div></div>
     </button>
     <button class="home-btn" id="home-btn" onclick="switchApp('home')">🏠</button>
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    
   </div>
   <div id="frames">
     <div class="frame-wrap center" id="frame-home">
@@ -2077,10 +2079,7 @@ function toggleTheme(){
 
 // Init
 (function(){
-  const saved=localStorage.getItem('app-theme')||'light';
-  document.body.classList.add('theme-'+saved);
-  const btn=document.getElementById('theme-btn');
-  if(btn) btn.textContent=saved==='dark'?'☀️':'🌙';
+  document.body.classList.add('theme-dark');
   updateInd('home');
 })();
 
@@ -2111,7 +2110,7 @@ if (!db.length) {
   saveDb();
 }
 
-function saveDb() {
+async function saveDb() {
   try { localStorage.setItem('amulet-nexus-v2', JSON.stringify(db)); }
   catch(e) {
     if (e.name==='QuotaExceededError') {
@@ -2128,7 +2127,7 @@ function saveDb() {
 }
 
 // ── COMPRESS ──
-function compressImage(file, maxW=480, q=0.55) {
+async function compressImage(file, maxW=480, q=0.55) {
   return new Promise(res => {
     const r = new FileReader();
     r.onload = e => {
@@ -2491,7 +2490,7 @@ function renderAnalysis(){
 }
 
 // ── CLOUD ──
-function renderCloud(){
+async function renderCloud(){
   updateDriveUI();
   updateSheetsUI();
   const url=localStorage.getItem('amulet-script-url');
@@ -2504,36 +2503,66 @@ function renderCloud(){
   }
 }
 async function uploadToSheets(){
-  if(!sheetsAccessToken){showToast('กรุณาเชื่อมต่อ Google Sheets ก่อน',true);return;}
-  document.getElementById('sync-indicator').style.display='block';
+  const ind=document.getElementById('sync-indicator');
+  if(ind) ind.style.display='block';
   try{
-    // Build rows
+    // Try Apps Script URL first (no OAuth needed)
+    if(scriptURL){
+      const payload={action:'sync',data:db};
+      const res=await fetch(scriptURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const d=await res.json();
+      if(d.status==='ok'){
+        localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));
+        showToast('✅ ซิงค์สำเร็จ! '+d.count+' รายการ');
+        if(ind) ind.style.display='none';
+        return;
+      } else { showToast('❌ Apps Script: '+(d.message||'error'),true); }
+    }
+    // Fallback: Sheets API (OAuth)
+    if(!sheetsAccessToken){showToast('กรุณากรอก Apps Script URL หรือเชื่อมต่อ Google Sheets',true);if(ind)ind.style.display='none';return;}
     const headers=['ID','ชื่อ','ประเภท','ช่องทางซื้อ','ความน่าเชื่อถือ','ราคาซื้อ','วันที่ซื้อ','สถานะ','ราคาขาย','วันที่ขาย','ช่องทางขาย','กำไร/ขาดทุน','%','บันทึก'];
     const rows=db.map(i=>{const p=calcPnL(i);return[i.id,i.name,i.type,i.channel,i.trust,i.buyPrice,i.buyDate,i.status==='sold'?'ขายแล้ว':'ถืออยู่',i.sellPrice||'',i.sellDate||'',i.sellChannel||'',p?p.pnl:'',p?p.pct.toFixed(1)+'%':'',i.note||''];});
     const values=[headers,...rows];
-    // Clear then write
     await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A1:N${values.length+1}:clear`,{method:'POST',headers:{Authorization:'Bearer '+sheetsAccessToken,'Content-Type':'application/json'}});
     const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A1?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+sheetsAccessToken,'Content-Type':'application/json'},body:JSON.stringify({values})});
     const d=await res.json();
-    if(d.updatedCells){
-      localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));
-      showToast('ซิงค์ขึ้น Google Sheets แล้ว ✅ '+rows.length+' รายการ');
-    } else { showToast('ซิงค์ไม่สำเร็จ: '+(d.error?.message||'unknown'),true); }
-  }catch(e){showToast('ซิงค์ไม่สำเร็จ: '+e.message,true);}
-  document.getElementById('sync-indicator').style.display='none';
+    if(d.updatedCells){localStorage.setItem('amulet-last-sync',new Date().toLocaleString('th-TH'));showToast('✅ ซิงค์ขึ้น Google Sheets แล้ว '+rows.length+' รายการ');}
+    else{showToast('❌ '+(d.error?.message||'unknown'),true);}
+  }catch(e){showToast('❌ '+e.message,true);}
+  if(ind) ind.style.display='none';
 }
+
 async function downloadFromSheets(){
-  if(!sheetsAccessToken){showToast('กรุณาเชื่อมต่อ Google Sheets ก่อน',true);return;}
-  document.getElementById('sync-indicator').style.display='block';
+  const ind=document.getElementById('sync-indicator');
+  if(ind) ind.style.display='block';
   try{
+    // Try Apps Script URL first
+    if(scriptURL){
+      const res=await fetch(scriptURL+'?action=get');
+      const d=await res.json();
+      if(d.status==='ok'&&d.data&&d.data.length>0){
+        // Merge: keep local items not in sheets, add/update from sheets
+        d.data.forEach(item=>{
+          const idx=db.findIndex(x=>x.id===item.id);
+          if(idx>=0) db[idx]={...db[idx],...item};
+          else db.push(item);
+        });
+        saveDB(); renderDashboard(); renderPortfolio();
+        showToast('✅ ดึงข้อมูลสำเร็จ '+d.data.length+' รายการ');
+        if(ind) ind.style.display='none';
+        return;
+      } else { showToast('⚠️ ไม่พบข้อมูลใน Sheet หรือ error: '+(d.message||''),true); }
+    }
+    // Fallback: Sheets API
+    if(!sheetsAccessToken){showToast('กรุณากรอก Apps Script URL หรือเชื่อมต่อ Google Sheets',true);if(ind)ind.style.display='none';return;}
     const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A2:N1000`,{headers:{Authorization:'Bearer '+sheetsAccessToken}});
     const d=await res.json();
-    if(d.values&&d.values.length>0){
-      showToast('ดึงข้อมูลจาก Sheets สำเร็จ '+d.values.length+' รายการ ✅');
-    } else { showToast('ไม่พบข้อมูลใน Sheet',true); }
-  }catch(e){showToast('ดึงข้อมูลไม่สำเร็จ: '+e.message,true);}
-  document.getElementById('sync-indicator').style.display='none';
+    if(d.values&&d.values.length>0){showToast('✅ ดึงข้อมูลสำเร็จ '+d.values.length+' รายการ');}
+    else{showToast('⚠️ ไม่พบข้อมูลใน Sheet',true);}
+  }catch(e){showToast('❌ '+e.message,true);}
+  if(ind) ind.style.display='none';
 }
+
 // ── DRIVE ──
 const DRIVE_CLIENT_ID='646114646905-tsg6vrg3ef593jp3uj71k306lg8vpa8k.apps.googleusercontent.com';
 const SHEETS_CLIENT_ID='646114646905-tsg6vrg3ef593jp3uj71k306lg8vpa8k.apps.googleusercontent.com';
@@ -2542,7 +2571,7 @@ const SHEET_NAME='AmuletData';
 const SHEETS_SCOPES='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 let sheetsAccessToken=localStorage.getItem('sheets-access-token')||null;
 
-function sheetsLogin(){
+async function sheetsLogin(){
   if(typeof google==='undefined'||!google.accounts){showToast('กรุณาเปิดผ่าน a-nx.vercel.app ครับ',true);return;}
   const client=google.accounts.oauth2.initTokenClient({
     client_id:SHEETS_CLIENT_ID,
@@ -2558,7 +2587,7 @@ function sheetsLogin(){
   client.requestAccessToken();
 }
 
-function sheetsLogout(){
+async function sheetsLogout(){
   if(sheetsAccessToken)google.accounts.oauth2.revoke(sheetsAccessToken);
   sheetsAccessToken=null;
   localStorage.removeItem('sheets-access-token');
@@ -2566,7 +2595,7 @@ function sheetsLogout(){
   showToast('ยกเลิกการเชื่อมต่อแล้ว');
 }
 
-function updateSheetsUI(){
+async function updateSheetsUI(){
   const on=!!sheetsAccessToken;
   const lb=document.getElementById('sheets-login-btn'),lo=document.getElementById('sheets-logout-btn');
   const st=document.getElementById('sheets-status-text');
@@ -2580,7 +2609,7 @@ const DRIVE_SCOPES='https://www.googleapis.com/auth/drive.file';
 let driveAccessToken=localStorage.getItem('drive-access-token')||null;
 let driveFolderId=localStorage.getItem('drive-folder-id')||null;
 
-function driveLogin(){
+async function driveLogin(){
   if(typeof google==='undefined'||!google.accounts){showToast('กรุณาเปิดผ่าน a-nx.vercel.app ครับ',true);return;}
   const client=google.accounts.oauth2.initTokenClient({client_id:DRIVE_CLIENT_ID,scope:DRIVE_SCOPES,callback:async resp=>{
     if(resp.error){showToast('Login ไม่สำเร็จ',true);return;}
@@ -2589,8 +2618,8 @@ function driveLogin(){
   }});
   client.requestAccessToken();
 }
-function driveLogout(){if(driveAccessToken)google.accounts.oauth2.revoke(driveAccessToken);driveAccessToken=null;driveFolderId=null;localStorage.removeItem('drive-access-token');localStorage.removeItem('drive-folder-id');updateDriveUI();showToast('ยกเลิกการเชื่อมต่อแล้ว');}
-function updateDriveUI(){
+async function driveLogout(){if(driveAccessToken)google.accounts.oauth2.revoke(driveAccessToken);driveAccessToken=null;driveFolderId=null;localStorage.removeItem('drive-access-token');localStorage.removeItem('drive-folder-id');updateDriveUI();showToast('ยกเลิกการเชื่อมต่อแล้ว');}
+async function updateDriveUI(){
   const on=!!driveAccessToken;
   const lb=document.getElementById('drive-login-btn'),lo=document.getElementById('drive-logout-btn');
   const st=document.getElementById('drive-status-text'),fi=document.getElementById('drive-folder-info');
@@ -2744,7 +2773,7 @@ let selectedCat = '';
 let editId = null;
 let chatHistory = [];
 
-function saveDb() {
+async function saveDb() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch(e) {}
 }
 function saveSettings() {
