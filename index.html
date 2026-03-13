@@ -1641,7 +1641,7 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catc
       <div class="fc">
         <div class="fc-head">Google Apps Script URL</div>
         <div class="fc-body">
-          <div class="field"><label>Web App URL</label><input type="url" id="script-url" placeholder="https://script.google.com/macros/s/..."></div>
+          <div class="field"><label>Web App URL</label><input type="url" id="script-url" placeholder="https://script.google.com/macros/s/..." oninput="saveScriptURL()"></div>
           <button class="cloud-act s" onclick="testConnection()">ทดสอบการเชื่อมต่อ</button>
         </div>
       </div>
@@ -2659,6 +2659,37 @@ renderCloud();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
 
 
+// ── SCRIPT URL HELPERS ──
+function saveScriptURL() {
+  const input = document.getElementById('script-url');
+  if (!input) return;
+  scriptURL = input.value.trim();
+  localStorage.setItem('amulet-script-url', scriptURL);
+  showToast(scriptURL ? 'บันทึก URL แล้ว' : 'ลบ URL แล้ว');
+}
+
+function testConnection() {
+  const input = document.getElementById('script-url');
+  if (!input) return;
+  const url = input.value.trim();
+  if (!url) { showToast('กรุณากรอก URL ก่อน', true); return; }
+  scriptURL = url;
+  localStorage.setItem('amulet-script-url', url);
+  showToast('กำลังทดสอบ...');
+  fetch(url + '?action=ping')
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'ok') {
+        showToast('✅ เชื่อมต่อสำเร็จ! ' + (d.message || ''));
+        const st = document.getElementById('sync-status');
+        if (st) { st.querySelector('.ss-dot').style.background='#2ecc71'; st.querySelector('.ss-text').textContent='เชื่อมต่อแล้ว'; }
+      } else {
+        showToast('❌ ตอบกลับผิดพลาด: ' + (d.message || ''), true);
+      }
+    })
+    .catch(e => showToast('❌ เชื่อมต่อไม่ได้: ' + e.message, true));
+}
+
 // ── EXPOSE TO WINDOW ──
   try{window.showPage=showPage;}catch(e){}
   try{window.openAdd=openAdd;}catch(e){}
@@ -2684,6 +2715,8 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   try{window.uploadToSheets=uploadToSheets;}catch(e){}
   try{window.downloadFromSheets=downloadFromSheets;}catch(e){}
   try{window.syncNow=syncNow;}catch(e){}
+  try{window.testConnection=testConnection;}catch(e){}
+  try{window.saveScriptURL=saveScriptURL;}catch(e){}
   try{window.driveLogin=driveLogin;}catch(e){}
   try{window.driveLogout=driveLogout;}catch(e){}
   try{window.sheetsLogin=sheetsLogin;}catch(e){}
