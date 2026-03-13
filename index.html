@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0c10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Apps">
+<link rel="manifest" href="/manifest.json">
+<title>My Apps</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#0c0c10;font-family:'Sarabun',sans-serif;-webkit-font-smoothing:antialiased}
+:root{
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --bar-h:54px;
+  --mint:#4ecca3;--amber:#d4a96a;
+  --text:#f0eee8;--text2:#55535f;
+  --bg:#0c0c10;--bg2:#14141a;
+  --edge:rgba(255,255,255,0.08);
+}
+#shell{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;box-shadow:0 0 0 0.5px rgba(255,255,255,0.05)}
+
+/* TOP BAR */
+#top-bar{
+  flex-shrink:0;
+  height:calc(var(--bar-h) + var(--safe-t));
+  padding-top:var(--safe-t);
+  background:rgba(12,12,16,0.97);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;
+  padding-left:12px;padding-right:12px;
+  gap:4px;z-index:200;position:relative;
+}
+#top-bar::after{
+  content:'';position:absolute;bottom:0;height:2px;border-radius:2px 2px 0 0;
+  background:var(--ind-color,#fff);
+  transition:left .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1),background .3s;
+  left:var(--ind-left,12px);width:var(--ind-w,32px);
+}
+.app-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 12px;border-radius:10px;
+  background:none;border:none;cursor:pointer;
+  transition:background .18s;white-space:nowrap;
+}
+.app-tab:active{background:rgba(255,255,255,0.05)}
+.tab-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:box-shadow .3s}
+.app-tab[data-app="amulet"] .tab-icon{background:rgba(212,169,106,0.12)}
+.app-tab[data-app="finance"] .tab-icon{background:rgba(78,204,163,0.12)}
+.app-tab.active[data-app="amulet"] .tab-icon{box-shadow:0 0 12px rgba(212,169,106,0.4)}
+.app-tab.active[data-app="finance"] .tab-icon{box-shadow:0 0 12px rgba(78,204,163,0.4)}
+.tab-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--text2);letter-spacing:-.2px;transition:color .18s}
+.tab-sub{font-size:8.5px;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;opacity:.4;margin-top:1px;transition:opacity .18s}
+.app-tab.active .tab-name{color:var(--text)}
+.app-tab[data-app="amulet"].active .tab-name{color:var(--amber)}
+.app-tab[data-app="finance"].active .tab-name{color:var(--mint)}
+.app-tab.active .tab-sub{opacity:.7}
+.tab-sep{width:1px;height:26px;background:var(--edge);flex-shrink:0;margin:0 2px}
+.home-btn{
+  margin-left:auto;flex-shrink:0;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--edge);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;transition:background .18s,border-color .18s;
+}
+.home-btn.active{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+
+/* FRAMES */
+#frames{flex:1;position:relative;overflow:hidden}
+.frame-wrap{
+  position:absolute;inset:0;
+  background:var(--bg);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+.frame-wrap.left  {transform:translateX(-100%)}
+.frame-wrap.center{transform:translateX(0)}
+.frame-wrap.right {transform:translateX(100%)}
+.frame-wrap.notransition{transition:none}
+iframe{width:100%;height:100%;border:none;display:block;background:var(--bg)}
+
+/* LOADING */
+.frame-loading{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;background:var(--bg);pointer-events:none;
+  transition:opacity .3s;z-index:5;
+}
+.frame-loading.gone{opacity:0;pointer-events:none}
+.ld-icon{font-size:30px;animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-text{font-size:11px;color:rgba(255,255,255,0.18);letter-spacing:1px}
+
+/* HOME SCREEN */
+.home-wrap{height:100%;display:flex;flex-direction:column;overflow-y:auto;background:var(--bg);position:relative}
+.home-wrap::-webkit-scrollbar{display:none}
+.home-bg{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 40% at 10% 0%,rgba(78,204,163,0.08) 0%,transparent 55%),
+             radial-gradient(ellipse 70% 40% at 95% 100%,rgba(212,169,106,0.07) 0%,transparent 55%)}
+.home-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,0.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.016) 1px,transparent 1px);
+  background-size:42px 42px}
+.home-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:32px 22px calc(32px + var(--safe-b))}
+
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;
+  background:rgba(78,204,163,0.07);border:1px solid rgba(78,204,163,0.16);
+  font-size:9px;font-weight:600;color:var(--mint);letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:24px;align-self:flex-start;
+}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px var(--mint);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.home-title{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1.1;margin-bottom:9px}
+.home-sub{font-size:13px;color:rgba(240,238,232,0.38);line-height:1.75;margin-bottom:30px}
+
+.home-cards{display:flex;flex-direction:column;gap:11px;margin-bottom:auto}
+.hcard{
+  display:flex;align-items:center;gap:13px;
+  padding:16px 17px;border-radius:16px;
+  border:1px solid var(--edge);
+  background:rgba(255,255,255,0.022);
+  cursor:pointer;transition:transform .16s,border-color .16s,background .16s;
+  position:relative;overflow:hidden;
+}
+.hcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.025) 0%,transparent 50%);pointer-events:none}
+.hcard:active{transform:scale(0.985)}
+.hcard.amber{border-color:rgba(212,169,106,0.22)}
+.hcard.amber:active{background:rgba(212,169,106,0.05);border-color:rgba(212,169,106,0.4)}
+.hcard.mint{border-color:rgba(78,204,163,0.2)}
+.hcard.mint:active{background:rgba(78,204,163,0.05);border-color:rgba(78,204,163,0.4)}
+.hcard-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.hcard.amber .hcard-icon{background:rgba(212,169,106,0.13);box-shadow:0 0 16px rgba(212,169,106,0.16)}
+.hcard.mint  .hcard-icon{background:rgba(78,204,163,0.12); box-shadow:0 0 16px rgba(78,204,163,0.15)}
+.hcard-body{flex:1;min-width:0}
+.hcard-name{font-family:'Syne',sans-serif;font-size:15.5px;font-weight:700;letter-spacing:-.3px;margin-bottom:3px}
+.hcard.amber .hcard-name{color:var(--amber)}
+.hcard.mint  .hcard-name{color:var(--mint)}
+.hcard-desc{font-size:11px;color:rgba(240,238,232,0.36);line-height:1.55}
+.hcard-arr{font-size:17px;color:rgba(255,255,255,0.18);flex-shrink:0;transition:transform .18s,color .18s}
+.hcard:active .hcard-arr{color:rgba(255,255,255,0.5);transform:translateX(3px)}
+
+.home-footer{margin-top:28px;text-align:center;font-size:9.5px;color:rgba(240,238,232,0.15);letter-spacing:.5px}
+.home-footer span{color:rgba(240,238,232,0.28)}
+
+/* TOAST */
+#toast{
+  position:fixed;top:calc(var(--bar-h) + var(--safe-t) + 10px);
+  left:50%;transform:translateX(-50%) translateY(-8px);
+  background:rgba(22,22,28,0.96);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);padding:8px 18px;border-radius:20px;
+  font-size:12px;font-weight:500;
+  opacity:0;transition:all .22s cubic-bezier(.22,1,.36,1);
+  z-index:300;pointer-events:none;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <div id="top-bar">
+    <button class="app-tab" data-app="amulet" onclick="switchApp('amulet',this)">
+      <div class="tab-icon">🪬</div>
+      <div>
+        <div class="tab-name">Amulet Nexus</div>
+        <div class="tab-sub">Portfolio</div>
+      </div>
+    </button>
+    <div class="tab-sep"></div>
+    <button class="app-tab" data-app="finance" onclick="switchApp('finance',this)">
+      <div class="tab-icon">💸</div>
+      <div>
+        <div class="tab-name">Flo Finance</div>
+        <div class="tab-sub">AI Money</div>
+      </div>
+    </button>
+    <button class="home-btn active" id="home-btn" onclick="switchApp('home',this)" title="Home">🏠</button>
+  </div>
+
+  <div id="frames">
+
+    <div class="frame-wrap center" id="frame-home">
+      <div class="home-wrap">
+        <div class="home-bg"></div><div class="home-grid"></div>
+        <div class="home-content">
+          <div class="live-badge"><div class="live-dot"></div>2 Apps · Ready</div>
+          <div class="home-title">สวัสดีครับ 👋</div>
+          <div class="home-sub">เลือกแอปที่ต้องการ<br>หรือกดแท็บด้านบนได้เลย</div>
+          <div class="home-cards">
+            <div class="hcard amber" onclick="switchApp('amulet',null)">
+              <div class="hcard-icon">🪬</div>
+              <div class="hcard-body">
+                <div class="hcard-name">Amulet Nexus</div>
+                <div class="hcard-desc">ติดตามพอร์ตพระเครื่อง · กำไร/ขาดทุน · Google Sheets</div>
+              </div>
+              <div class="hcard-arr">›</div>
+            </div>
+            <div class="hcard mint" onclick="switchApp('finance',null)">
+              <div class="hcard-icon">💸</div>
+              <div class="hcard-body">
+                <div class="hcard-name">Flo Finance</div>
+                <div class="hcard-desc">บันทึกรายรับ-รายจ่าย · AI วิเคราะห์การเงิน · Claude AI</div>
+              </div>
+              <div class="hcard-arr">›</div>
+            </div>
+          </div>
+          <div class="home-footer">by <span>สรรธาร พชสิทธิ์</span> · Powered by Claude AI</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-wrap right" id="frame-amulet">
+      <div class="frame-loading" id="ld-amulet">
+        <div class="ld-icon">🪬</div>
+        <div class="ld-text">กำลังโหลด...</div>
+      </div>
+      <iframe id="if-amulet" title="Amulet Nexus" onload="onFrameLoad('amulet')"></iframe>
+    </div>
+
+    <div class="frame-wrap right" id="frame-finance">
+      <div class="frame-loading" id="ld-finance">
+        <div class="ld-icon">💸</div>
+        <div class="ld-text">กำลังโหลด...</div>
+      </div>
+      <iframe id="if-finance" title="Flo Finance" onload="onFrameLoad('finance')"></iframe>
+    </div>
+
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const ORDER  = ['amulet','home','finance'];   // left → center → right
+const COLORS = { amulet:'#d4a96a', finance:'#4ecca3', home:'#ffffff' };
+const SRCS   = { amulet:'/amulet/', finance:'/finance/' };
+let cur = 'home';
+let srcLoaded = {};
+
+function pos(app){ return ORDER.indexOf(app); }
+
+function onFrameLoad(app){
+  document.getElementById('ld-'+app).classList.add('gone');
+  srcLoaded[app]=true;
+}
+
+function lazyLoad(app){
+  if(srcLoaded[app]||!SRCS[app]) return;
+  const iframe=document.getElementById('if-'+app);
+  if(iframe&&!iframe.src){ iframe.src=SRCS[app]; }
+}
+
+function switchApp(next, btnEl){
+  if(next===cur) return;
+  const frames=document.querySelectorAll('.frame-wrap');
+
+  // Figure out direction: next is right of cur?
+  const goRight = pos(next)>pos(cur);
+
+  // Set current positions without transition first
+  frames.forEach(f=>{
+    f.classList.add('notransition');
+    const app=f.id.replace('frame-','');
+    if(app===cur)      f.className='frame-wrap notransition center';
+    else if(pos(app)>pos(cur)) f.className='frame-wrap notransition right';
+    else               f.className='frame-wrap notransition left';
+  });
+  document.getElementById('frames').getBoundingClientRect(); // force reflow
+
+  // Remove notransition, then animate
+  frames.forEach(f=>f.classList.remove('notransition'));
+
+  // Slide everything: shift by direction
+  frames.forEach(f=>{
+    const app=f.id.replace('frame-','');
+    const p=pos(app);
+    const c=pos(cur);
+    const n=pos(next);
+    // After switch, cur goes away, next comes to center
+    if(app===next){
+      f.className='frame-wrap center';
+    } else if(app===cur){
+      f.className='frame-wrap '+(goRight?'left':'right');
+    } else {
+      // Others stay out of the way
+      f.className='frame-wrap '+(p<pos(next)?'left':'right');
+    }
+  });
+
+  cur=next;
+  lazyLoad(next);
+  updateTabs(next);
+  updateIndicator(next);
+}
+
+function updateTabs(app){
+  document.querySelectorAll('.app-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('home-btn').classList.remove('active');
+  if(app==='home') document.getElementById('home-btn').classList.add('active');
+  else {
+    const t=document.querySelector(`.app-tab[data-app="${app}"]`);
+    if(t)t.classList.add('active');
+  }
+}
+
+function updateIndicator(app){
+  const bar=document.getElementById('top-bar');
+  bar.style.setProperty('--ind-color', COLORS[app]||'#fff');
+  if(app==='home'){
+    const el=document.getElementById('home-btn');
+    const br=bar.getBoundingClientRect();
+    const er=el.getBoundingClientRect();
+    bar.style.setProperty('--ind-left',(er.left-br.left+8)+'px');
+    bar.style.setProperty('--ind-w','16px');
+  } else {
+    const el=document.querySelector(`.app-tab[data-app="${app}"]`);
+    if(!el)return;
+    const br=bar.getBoundingClientRect();
+    const er=el.getBoundingClientRect();
+    bar.style.setProperty('--ind-left',(er.left-br.left)+'px');
+    bar.style.setProperty('--ind-w',er.width+'px');
+  }
+}
+
+// Preload both apps silently after 1s
+setTimeout(()=>{ lazyLoad('amulet'); lazyLoad('finance'); }, 1000);
+
+window.addEventListener('load',()=>updateIndicator('home'));
+
+if('serviceWorker' in navigator)
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
