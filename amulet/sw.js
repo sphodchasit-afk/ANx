@@ -1,21 +1,37 @@
-{
-  "name": "Amulet Nexus",
-  "short_name": "Amulet",
-  "description": "Thai Buddhist Amulet Trading Portfolio Tracker",
-  "start_url": "/amulet/",
-  "scope": "/amulet/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#fafaf8",
-  "theme_color": "#fafaf8",
-  "icons": [
-    { "src": "/public/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
-    { "src": "/public/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
-    { "src": "/public/icon-128.png", "sizes": "128x128", "type": "image/png" },
-    { "src": "/public/icon-144.png", "sizes": "144x144", "type": "image/png" },
-    { "src": "/public/icon-152.png", "sizes": "152x152", "type": "image/png" },
-    { "src": "/public/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/public/icon-384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "/public/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
-}
+const CACHE = 'amulet-nexus-v3';
+const ASSETS = [
+  '/amulet/',
+  '/amulet/index.html',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  if (url.origin !== location.origin) return;
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      const fetched = fetch(e.request).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || fetched;
+    })
+  );
+});
